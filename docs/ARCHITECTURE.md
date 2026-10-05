@@ -24,6 +24,7 @@ com.localdeals.finder
 - **Clean Architecture & MVVM**: UI layer (Compose) -> ViewModel -> UseCases (optional) -> Repository Interface (domain) -> Repository Implementation (data).
 - **UiState Pattern**: ViewModels expose a single `uiState: StateFlow<UiState<T>>` to the UI, representing `Loading`, `Success`, `Empty`, or `Error`.
 - **BaseViewModel**: A generic `BaseViewModel<T>` provides standard methods to emit state.
+- **Navigation**: Controlled by `NavGraph.kt` using Navigation Compose. `LocalDealsApp.kt` holds the Scaffold and Bottom Navigation. Navigation actions happen within screens calling callbacks (e.g. `onNavigateNext`).
 
 ## Key Decisions
 - **Offline First & Mock Repositories**: In v1, the app relies purely on mock data. All domain interfaces are bound to Mock implementations in `AppModule`.

@@ -24,8 +24,8 @@
 | # | Step | Status |
 |---|------|--------|
 | 1 | Project Foundation & Architecture | done |
-| 2 | Navigation & Design System | NEXT |
-| 3 | Login & User Profile | pending |
+| 2 | Navigation & Design System | done |
+| 3 | Login & User Profile | NEXT |
 | 4 | Location Permission | pending |
 | 5 | Home Screen | pending |
 | 6 | Search & Categories | pending |
@@ -44,6 +44,7 @@ Status values: done / current / next / pending
 ## Changelog
 
 - **Step 1 (2026-10-05):** Scaffolding project with Gradle versions catalog, Hilt setup, Clean Architecture packages, Domain Models, Repository interfaces + Mock implementations, UiState/BaseViewModel, and Material 3 custom Theme. Edge-to-edge MainActivity is working.
+- **Step 2 (2026-10-06):** Added UI Shapes and Navigation system. Built reusable UI components (DealCard, StoreCard, TopBar, PrimaryButton, States, Badges). Created placeholder Compose screens and wired up NavGraph with BottomNavigation. Added a Component Gallery.
 
 ## Known Issues
 
@@ -52,9 +53,10 @@ Status values: done / current / next / pending
 ## Manual Test Results
 
 - **Step 1:** Ran gradle build successfully, the project successfully compiles, the empty screen shows "Local Deals Finder" with the custom theme.
+- **Step 2:** The app compiles successfully. The app launches and navigates Splash -> Login -> Location -> Home. The Component Gallery successfully displays all reusable UI components.
 
 ## Resume Note
 
-- **Last completed step:** Step 1
-- **Next prompt:** Prompt 2
+- **Last completed step:** Step 2
+- **Next prompt:** Prompt 3
 - **Unfinished work / things the next window must know:** None.

@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Text("Local Deals Finder")
+                    com.localdeals.finder.ui.navigation.LocalDealsApp()
                 }
             }
         }
