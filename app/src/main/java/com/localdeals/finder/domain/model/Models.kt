@@ -8,7 +8,10 @@ data class User(
     val id: String,
     val name: String,
     val email: String,
-    val role: Role = Role.USER
+    val phone: String = "",
+    val role: Role = Role.USER,
+    val searchRadiusKm: Int = 5,
+    val language: String = "English"
 )
 
 data class Seller(

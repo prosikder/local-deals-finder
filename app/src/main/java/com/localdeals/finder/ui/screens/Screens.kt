@@ -23,21 +23,9 @@ fun PlaceholderScreen(title: String, onNavigate: (() -> Unit)? = null, buttonTex
 }
 
 @Composable
-fun SplashScreen(onNavigateNext: () -> Unit) { PlaceholderScreen("Splash Screen", onNavigateNext, "Go to Login") }
+fun SplashScreen() { PlaceholderScreen("Splash Screen", null, null) }
 
-@Composable
-fun LoginScreen(onNavigateNext: () -> Unit, onGoToRegister: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Login Screen", style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = onNavigateNext) { Text("Login") }
-        Spacer(Modifier.height(8.dp))
-        TextButton(onClick = onGoToRegister) { Text("Register") }
-    }
-}
 
-@Composable
-fun RegisterScreen(onBack: () -> Unit) { PlaceholderScreen("Register Screen", onBack, "Back to Login") }
 
 @Composable
 fun LocationPermissionScreen(onNavigateNext: () -> Unit) { PlaceholderScreen("Location Permission Screen", onNavigateNext, "Grant Permission") }
@@ -78,8 +66,7 @@ fun WishlistScreen() { PlaceholderScreen("Wishlist Screen") }
 @Composable
 fun NotificationsScreen() { PlaceholderScreen("Notifications Screen") }
 
-@Composable
-fun ProfileScreen() { PlaceholderScreen("Profile Screen") }
+
 
 @Composable
 fun SellerDashboardScreen() { PlaceholderScreen("Seller Dashboard Screen") }

@@ -8,19 +8,66 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class MockAuthRepository @Inject constructor() : AuthRepository {
-    private var currentUser: User? = null
+import com.localdeals.finder.data.local.DataStoreManager
+import com.localdeals.finder.util.HashUtil
+import kotlinx.coroutines.flow.firstOrNull
 
-    override suspend fun getCurrentUser(): User? = currentUser
+@Singleton
+class MockAuthRepository @Inject constructor(
+    private val dataStoreManager: DataStoreManager
+) : AuthRepository {
+    private val userDatabase = mutableListOf<User>()
+    private val credentials = mutableMapOf<String, Pair<String, String>>() // email -> Pair(hash, salt)
+
+    init {
+        val adminSalt = HashUtil.generateSalt()
+        val adminHash = HashUtil.hashPassword("Admin@123", adminSalt)
+        credentials["admin@local.app"] = adminHash to adminSalt
+        userDatabase.add(User("admin_id", "Admin", "admin@local.app", role = Role.ADMIN))
+    }
+
+    override suspend fun getCurrentUser(): User? {
+        val userId = dataStoreManager.loggedInUserId.firstOrNull()
+        return userDatabase.find { it.id == userId }
+    }
 
     override suspend fun login(email: String, pass: String): Result<User> {
-        currentUser = User("1", "Mock User", email, Role.USER)
-        return Result.success(currentUser!!)
+        val creds = credentials[email] ?: return Result.failure(Exception("Invalid email or password"))
+        val hash = HashUtil.hashPassword(pass, creds.second)
+        if (hash == creds.first) {
+            val user = userDatabase.find { it.email == email }
+            if (user != null) {
+                dataStoreManager.saveSession(user.id)
+                return Result.success(user)
+            }
+        }
+        return Result.failure(Exception("Invalid email or password"))
+    }
+
+    override suspend fun register(name: String, email: String, pass: String, role: Role): Result<User> {
+        if (credentials.containsKey(email)) {
+            return Result.failure(Exception("Email already exists"))
+        }
+        val salt = HashUtil.generateSalt()
+        val hash = HashUtil.hashPassword(pass, salt)
+        credentials[email] = hash to salt
+        val newUser = User(java.util.UUID.randomUUID().toString(), name, email, role = role)
+        userDatabase.add(newUser)
+        dataStoreManager.saveSession(newUser.id)
+        return Result.success(newUser)
+    }
+
+    override suspend fun updateProfile(user: User): Result<User> {
+        val index = userDatabase.indexOfFirst { it.id == user.id }
+        if (index != -1) {
+            userDatabase[index] = user
+            return Result.success(user)
+        }
+        return Result.failure(Exception("User not found"))
     }
 
     override suspend fun logout() {
-        currentUser = null
+        dataStoreManager.clearSession()
     }
 }
 

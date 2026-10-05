@@ -6,6 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.localdeals.finder.ui.screens.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.localdeals.finder.domain.model.Role
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 
 @Composable
 fun NavGraph(
@@ -18,15 +23,40 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable(Screen.Splash.route) {
-            SplashScreen(onNavigateNext = {
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Splash.route) { inclusive = true }
+            val splashViewModel: SplashViewModel = hiltViewModel()
+            val state by splashViewModel.state.collectAsState()
+
+            LaunchedEffect(state) {
+                when (state) {
+                    is SplashState.GoToLogin -> {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
+                    is SplashState.GoToLocationPermission -> {
+                        navController.navigate(Screen.LocationPermission.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
+                    is SplashState.GoToHome -> {
+                        val role = (state as SplashState.GoToHome).role
+                        val destination = when (role) {
+                            Role.ADMIN -> Screen.AdminPanel.route
+                            Role.SELLER -> Screen.SellerDashboard.route
+                            Role.USER -> Screen.Home.route
+                        }
+                        navController.navigate(destination) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
+                    else -> {}
                 }
-            })
+            }
+            SplashScreen()
         }
         composable(Screen.Login.route) {
             LoginScreen(
-                onNavigateNext = {
+                onNavigateNext = { role ->
                     navController.navigate(Screen.LocationPermission.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
@@ -37,7 +67,14 @@ fun NavGraph(
             )
         }
         composable(Screen.Register.route) {
-            RegisterScreen(onBack = { navController.popBackStack() })
+            RegisterScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateNext = { role ->
+                    navController.navigate(Screen.LocationPermission.route) {
+                        popUpTo(Screen.Register.route) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(Screen.LocationPermission.route) {
             LocationPermissionScreen(onNavigateNext = {
@@ -56,7 +93,15 @@ fun NavGraph(
         composable(Screen.Map.route) { MapScreen() }
         composable(Screen.Search.route) { SearchScreen() }
         composable(Screen.Wishlist.route) { WishlistScreen() }
-        composable(Screen.Profile.route) { ProfileScreen() }
+        composable(Screen.Profile.route) { 
+            ProfileScreen(
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true } // Clear back stack
+                    }
+                }
+            )
+        }
 
         // Details & Deep Links
         composable(Screen.Category.route) { backStackEntry ->
