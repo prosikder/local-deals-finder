@@ -1,0 +1,21 @@
+# Gradle / build
+.gradle/
+build/
+app/build/
+.cxx/
+.externalNativeBuild/
+captures/
+
+# IDE
+.idea/
+*.iml
+
+# Secrets (never commit)
+local.properties
+*.jks
+*.keystore
+google-services.json
+
+# OS
+.DS_Store
+Thumbs.db

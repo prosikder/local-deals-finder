@@ -1,0 +1,30 @@
+package com.localdeals.finder.domain.repository
+
+import com.localdeals.finder.domain.model.*
+import kotlinx.coroutines.flow.Flow
+
+interface AuthRepository {
+    suspend fun getCurrentUser(): User?
+    suspend fun login(email: String, pass: String): Result<User>
+    suspend fun logout()
+}
+
+interface DealRepository {
+    fun getDeals(): Flow<List<Deal>>
+    suspend fun getDealById(id: String): Deal?
+    suspend fun addDeal(deal: Deal)
+}
+
+interface ChatRepository {
+    fun getMessages(userId1: String, userId2: String): Flow<List<ChatMessage>>
+    suspend fun sendMessage(message: ChatMessage)
+}
+
+interface OrderRepository {
+    fun getOrdersForUser(userId: String): Flow<List<OrderRequest>>
+    suspend fun createOrder(order: OrderRequest)
+}
+
+interface LocationRepository {
+    suspend fun getCurrentLocation(): Pair<Double, Double>?
+}

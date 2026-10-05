@@ -1,0 +1,44 @@
+package com.localdeals.finder.di
+
+import com.localdeals.finder.data.mock.*
+import com.localdeals.finder.domain.repository.*
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class AppModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        mockAuthRepository: MockAuthRepository
+    ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDealRepository(
+        mockDealRepository: MockDealRepository
+    ): DealRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindChatRepository(
+        mockChatRepository: MockChatRepository
+    ): ChatRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindOrderRepository(
+        mockOrderRepository: MockOrderRepository
+    ): OrderRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocationRepository(
+        mockLocationRepository: MockLocationRepository
+    ): LocationRepository
+}
