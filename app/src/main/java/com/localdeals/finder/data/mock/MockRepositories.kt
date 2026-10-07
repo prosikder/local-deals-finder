@@ -73,7 +73,7 @@ class MockAuthRepository @Inject constructor(
 
 @Singleton
 class MockDealRepository @Inject constructor() : DealRepository {
-    private val deals = MutableStateFlow<List<Deal>>(emptyList())
+    private val deals = MutableStateFlow<List<Deal>>(MockData.deals)
 
     override fun getDeals(): Flow<List<Deal>> = deals.asStateFlow()
 
@@ -82,6 +82,22 @@ class MockDealRepository @Inject constructor() : DealRepository {
     override suspend fun addDeal(deal: Deal) {
         deals.value = deals.value + deal
     }
+}
+
+@Singleton
+class MockSellerRepository @Inject constructor() : SellerRepository {
+    private val sellers = MutableStateFlow<List<Seller>>(MockData.sellers)
+
+    override fun getSellers(): Flow<List<Seller>> = sellers.asStateFlow()
+
+    override suspend fun getSellerById(id: String): Seller? = sellers.value.find { it.id == id }
+}
+
+@Singleton
+class MockCategoryRepository @Inject constructor() : CategoryRepository {
+    private val categories = MutableStateFlow<List<Category>>(MockData.categories)
+
+    override fun getCategories(): Flow<List<Category>> = categories.asStateFlow()
 }
 
 @Singleton

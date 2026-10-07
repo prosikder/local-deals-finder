@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun EmptyState(
     message: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAction: (() -> Unit)? = null,
+    actionText: String? = null
 ) {
     Column(
         modifier = modifier.fillMaxWidth().padding(32.dp),
@@ -38,6 +40,10 @@ fun EmptyState(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center
         )
+        if (onAction != null && actionText != null) {
+            Spacer(modifier = Modifier.height(24.dp))
+            PrimaryButton(text = actionText, onClick = onAction)
+        }
     }
 }
 

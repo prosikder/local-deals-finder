@@ -28,8 +28,6 @@ fun SplashScreen() { PlaceholderScreen("Splash Screen", null, null) }
 
 
 
-@Composable
-fun HomeScreen(onNavigateGallery: () -> Unit) { PlaceholderScreen("Home Screen", onNavigateGallery, "Open Component Gallery") }
 
 @Composable
 fun MapScreen() { PlaceholderScreen("Map Screen") }

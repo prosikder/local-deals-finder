@@ -26,6 +26,18 @@ abstract class AppModule {
 
     @Binds
     @Singleton
+    abstract fun bindSellerRepository(
+        mockSellerRepository: MockSellerRepository
+    ): SellerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoryRepository(
+        mockCategoryRepository: MockCategoryRepository
+    ): CategoryRepository
+
+    @Binds
+    @Singleton
     abstract fun bindChatRepository(
         mockChatRepository: MockChatRepository
     ): ChatRepository

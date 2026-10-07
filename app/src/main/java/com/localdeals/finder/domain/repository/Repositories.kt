@@ -17,6 +17,15 @@ interface DealRepository {
     suspend fun addDeal(deal: Deal)
 }
 
+interface SellerRepository {
+    fun getSellers(): Flow<List<Seller>>
+    suspend fun getSellerById(id: String): Seller?
+}
+
+interface CategoryRepository {
+    fun getCategories(): Flow<List<Category>>
+}
+
 interface ChatRepository {
     fun getMessages(userId1: String, userId2: String): Flow<List<ChatMessage>>
     suspend fun sendMessage(message: ChatMessage)

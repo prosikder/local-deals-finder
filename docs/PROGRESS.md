@@ -27,8 +27,8 @@
 | 2 | Navigation & Design System | done |
 | 3 | Login & User Profile | done |
 | 4 | Location Permission | done |
-| 5 | Home Screen | NEXT |
-| 6 | Search & Categories | pending |
+| 5 | Home Screen | done |
+| 6 | Search & Categories | NEXT |
 | 7 | Deal & Product Details | pending |
 | 8 | Map & Nearby Deals (offline) | pending |
 | 9 | Seller Store Profile | pending |
@@ -47,6 +47,7 @@ Status values: done / current / next / pending
 - **Step 2 (2026-10-06):** Added UI Shapes and Navigation system. Built reusable UI components (DealCard, StoreCard, TopBar, PrimaryButton, States, Badges). Created placeholder Compose screens and wired up NavGraph with BottomNavigation. Added a Component Gallery.
 - **Step 3 (2026-10-06):** Implemented Local Auth with SHA-256 password hashing and DataStore session persistence. Added `AuthUseCases` with JUnit tests. Created `LoginScreen`, `RegisterScreen`, and `ProfileScreen`. Updated `SplashViewModel` to auto-route based on session state. Added seeded Admin account (`admin@local.app`).
 - **Step 4 (2026-10-07):** Added Location Permission handling with `LocationRepositoryImpl` using `LocationManager`. Handled granted, denied, GPS off states, and manual fallback using DataStore to store predefined Dhaka areas. Implemented `LocationUtils` (Haversine distance, bearing) with unit tests. *Fixes*: Removed `suspend` modifier from `isLocationEnabled` interface method to fix build errors, and changed `LocationViewModel` to extend `androidx.lifecycle.ViewModel` directly (Hilt KSP issue with `BaseViewModel` generics).
+- **Step 5 (2026-10-07):** Created `MockData` with realistic Dhaka coordinates, BDT prices, and 40 deals across 8 categories and 12 sellers. Built `HomeScreen` with location header, search bar, horizontal category chips, hot deals sorted by distance/discount, ending soon deals with live countdown, and nearby stores. Added `GetNearbyDealsUseCase` (with unit tests) and `HomeViewModel` managing `UiState` via `StateFlow` with pull-to-refresh. Updated `EmptyState` to support action buttons.
 
 ## Known Issues
 
@@ -58,9 +59,10 @@ Status values: done / current / next / pending
 - **Step 2:** The app compiles successfully. The app launches and navigates Splash -> Login -> Location -> Home. The Component Gallery successfully displays all reusable UI components.
 - **Step 3:** The app successfully runs unit tests for validation and hashing. The app can login with the seeded Admin account or register a new user, and it persists the session across restarts using DataStore. Profile allows editing details.
 - **Step 4:** Haversine and Bearing unit tests pass. The app prompts for location permissions and handles GPS vs manual selection fallback. Coordinates are successfully retrieved via LocationManager or DataStore.
+- **Step 5:** `GetNearbyDealsUseCase` unit tests pass (verifies correct sorting by discount and distance score). The app compiles and runs. `HomeScreen` correctly displays hot deals, categories, and nearby stores, navigating appropriately.
 
 ## Resume Note
 
-- **Last completed step:** Step 4
-- **Next prompt:** Prompt 5
-- **Unfinished work / things the next window must know:** `LocationViewModel` directly extends `androidx.lifecycle.ViewModel` instead of `BaseViewModel<T>` to avoid Hilt KSP generic resolution issues.
+- **Last completed step:** Step 5
+- **Next prompt:** Prompt 6
+- **Unfinished work / things the next window must know:** `LocationViewModel` directly extends `androidx.lifecycle.ViewModel` instead of `BaseViewModel<T>` to avoid Hilt KSP generic resolution issues. `HomeScreen` is implemented with static gradients, BDT currency, and dynamic countdowns.

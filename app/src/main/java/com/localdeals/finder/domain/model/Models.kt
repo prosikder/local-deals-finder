@@ -21,7 +21,8 @@ data class Seller(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    val rating: Double = 0.0
+    val rating: Double = 0.0,
+    val imageUrl: String = ""
 )
 
 data class Category(
@@ -41,7 +42,8 @@ data class Deal(
     val stock: Int,
     val categoryId: String,
     val expirationTimeMillis: Long,
-    val distanceMeters: Int? = null
+    val distanceMeters: Int? = null,
+    val imageUrl: String = ""
 )
 
 data class Review(

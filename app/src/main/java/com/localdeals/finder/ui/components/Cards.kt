@@ -44,13 +44,13 @@ fun DealCard(
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "$${deal.discountedPrice}",
+                    text = "৳${deal.discountedPrice.toInt()}",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "$${deal.originalPrice}",
+                    text = "৳${deal.originalPrice.toInt()}",
                     style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.LineThrough),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
@@ -77,7 +77,17 @@ fun DealCard(
                         )
                     }
                 }
-                CountdownText(timeRemaining = "2d 4h") // Placeholder
+                val remaining = deal.expirationTimeMillis - System.currentTimeMillis()
+                if (remaining > 0) {
+                    val days = remaining / (24 * 60 * 60 * 1000)
+                    val hours = (remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
+                    val timeStr = if (days > 0) "${days}d ${hours}h" else "${hours}h remaining"
+                    Text(
+                        text = timeStr,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

@@ -86,9 +86,26 @@ fun NavGraph(
         
         // Bottom Nav Routes
         composable(Screen.Home.route) {
-            HomeScreen(onNavigateGallery = {
-                navController.navigate(Screen.ComponentGallery.route)
-            })
+            HomeScreen(
+                onNavigateGallery = {
+                    navController.navigate(Screen.ComponentGallery.route)
+                },
+                onNavigateToSearch = {
+                    navController.navigate(Screen.Search.route)
+                },
+                onNavigateToLocation = {
+                    navController.navigate(Screen.LocationPermission.route)
+                },
+                onNavigateToCategory = { categoryId ->
+                    navController.navigate(Screen.Category.createRoute(categoryId))
+                },
+                onNavigateToDeal = { dealId ->
+                    navController.navigate(Screen.DealDetails.createRoute(dealId))
+                },
+                onNavigateToStore = { storeId ->
+                    navController.navigate(Screen.SellerStore.createRoute(storeId))
+                }
+            )
         }
         composable(Screen.Map.route) { MapScreen() }
         composable(Screen.Search.route) { SearchScreen() }
