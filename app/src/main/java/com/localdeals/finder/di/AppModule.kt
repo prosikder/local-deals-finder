@@ -39,6 +39,6 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindLocationRepository(
-        mockLocationRepository: MockLocationRepository
+        locationRepositoryImpl: com.localdeals.finder.data.location.LocationRepositoryImpl
     ): LocationRepository
 }

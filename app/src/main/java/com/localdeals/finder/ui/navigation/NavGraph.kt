@@ -77,7 +77,7 @@ fun NavGraph(
             )
         }
         composable(Screen.LocationPermission.route) {
-            LocationPermissionScreen(onNavigateNext = {
+            LocationScreen(onLocationDetermined = {
                 navController.navigate(Screen.Home.route) {
                     popUpTo(Screen.LocationPermission.route) { inclusive = true }
                 }

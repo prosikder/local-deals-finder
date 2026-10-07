@@ -28,5 +28,12 @@ interface OrderRepository {
 }
 
 interface LocationRepository {
-    suspend fun getCurrentLocation(): Pair<Double, Double>?
+    val locationFlow: Flow<CurrentLocation?>
+    
+    suspend fun getLastKnownLocation(): CurrentLocation?
+    suspend fun getFreshLocation(timeoutMs: Long = 10000): CurrentLocation?
+    suspend fun setManualLocation(location: CurrentLocation)
+    suspend fun isLocationEnabled(): Boolean
+    fun startLocationUpdates()
+    fun stopLocationUpdates()
 }

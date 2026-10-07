@@ -18,6 +18,7 @@ class DataStoreManager @Inject constructor(
 ) {
     companion object {
         val LOGGED_IN_USER_ID = stringPreferencesKey("logged_in_user_id")
+        val MANUAL_LOCATION = stringPreferencesKey("manual_location")
     }
 
     val loggedInUserId: Flow<String?> = context.dataStore.data.map { preferences ->
@@ -33,6 +34,16 @@ class DataStoreManager @Inject constructor(
     suspend fun clearSession() {
         context.dataStore.edit { preferences ->
             preferences.remove(LOGGED_IN_USER_ID)
+        }
+    }
+
+    val manualLocation: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[MANUAL_LOCATION]
+    }
+
+    suspend fun saveManualLocation(latLngName: String) {
+        context.dataStore.edit { preferences ->
+            preferences[MANUAL_LOCATION] = latLngName
         }
     }
 }

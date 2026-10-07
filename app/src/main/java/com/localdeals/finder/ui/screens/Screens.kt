@@ -27,8 +27,6 @@ fun SplashScreen() { PlaceholderScreen("Splash Screen", null, null) }
 
 
 
-@Composable
-fun LocationPermissionScreen(onNavigateNext: () -> Unit) { PlaceholderScreen("Location Permission Screen", onNavigateNext, "Grant Permission") }
 
 @Composable
 fun HomeScreen(onNavigateGallery: () -> Unit) { PlaceholderScreen("Home Screen", onNavigateGallery, "Open Component Gallery") }
