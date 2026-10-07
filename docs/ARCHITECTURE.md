@@ -23,7 +23,7 @@ com.localdeals.finder
 ## Data Flow
 - **Clean Architecture & MVVM**: UI layer (Compose) -> ViewModel -> UseCases (optional) -> Repository Interface (domain) -> Repository Implementation (data).
 - **UiState Pattern**: ViewModels expose a single `uiState: StateFlow<UiState<T>>` to the UI, representing `Loading`, `Success`, `Empty`, or `Error`.
-- **BaseViewModel**: A generic `BaseViewModel<T>` provides standard methods to emit state.
+- **BaseViewModel**: A generic `BaseViewModel<T>` provides standard methods to emit state. Note: Some ViewModels (e.g. `LocationViewModel`) may extend `androidx.lifecycle.ViewModel` directly because Hilt can sometimes fail to resolve KSP bindings when inheriting from a generic `BaseViewModel` without providing a concrete type.
 - **Navigation**: Controlled by `NavGraph.kt` using Navigation Compose. `LocalDealsApp.kt` holds the Scaffold and Bottom Navigation. Navigation actions happen within screens calling callbacks (e.g. `onNavigateNext`).
 
 ## Key Decisions

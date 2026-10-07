@@ -46,7 +46,7 @@ Status values: done / current / next / pending
 - **Step 1 (2026-10-05):** Scaffolding project with Gradle versions catalog, Hilt setup, Clean Architecture packages, Domain Models, Repository interfaces + Mock implementations, UiState/BaseViewModel, and Material 3 custom Theme. Edge-to-edge MainActivity is working.
 - **Step 2 (2026-10-06):** Added UI Shapes and Navigation system. Built reusable UI components (DealCard, StoreCard, TopBar, PrimaryButton, States, Badges). Created placeholder Compose screens and wired up NavGraph with BottomNavigation. Added a Component Gallery.
 - **Step 3 (2026-10-06):** Implemented Local Auth with SHA-256 password hashing and DataStore session persistence. Added `AuthUseCases` with JUnit tests. Created `LoginScreen`, `RegisterScreen`, and `ProfileScreen`. Updated `SplashViewModel` to auto-route based on session state. Added seeded Admin account (`admin@local.app`).
-- **Step 4 (2026-10-07):** Added Location Permission handling with `LocationRepositoryImpl` using `LocationManager`. Handled granted, denied, GPS off states, and manual fallback using DataStore to store predefined Dhaka areas. Implemented `LocationUtils` (Haversine distance, bearing) with unit tests.
+- **Step 4 (2026-10-07):** Added Location Permission handling with `LocationRepositoryImpl` using `LocationManager`. Handled granted, denied, GPS off states, and manual fallback using DataStore to store predefined Dhaka areas. Implemented `LocationUtils` (Haversine distance, bearing) with unit tests. *Fixes*: Removed `suspend` modifier from `isLocationEnabled` interface method to fix build errors, and changed `LocationViewModel` to extend `androidx.lifecycle.ViewModel` directly (Hilt KSP issue with `BaseViewModel` generics).
 
 ## Known Issues
 
@@ -63,4 +63,4 @@ Status values: done / current / next / pending
 
 - **Last completed step:** Step 4
 - **Next prompt:** Prompt 5
-- **Unfinished work / things the next window must know:** None.
+- **Unfinished work / things the next window must know:** `LocationViewModel` directly extends `androidx.lifecycle.ViewModel` instead of `BaseViewModel<T>` to avoid Hilt KSP generic resolution issues.

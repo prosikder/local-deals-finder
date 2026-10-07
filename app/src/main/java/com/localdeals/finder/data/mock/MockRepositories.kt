@@ -108,5 +108,12 @@ class MockOrderRepository @Inject constructor() : OrderRepository {
 
 @Singleton
 class MockLocationRepository @Inject constructor() : LocationRepository {
-    override suspend fun getCurrentLocation(): Pair<Double, Double>? = Pair(0.0, 0.0)
+    override val locationFlow: Flow<CurrentLocation?> = MutableStateFlow(CurrentLocation.Default)
+    
+    override suspend fun getLastKnownLocation(): CurrentLocation? = CurrentLocation.Default
+    override suspend fun getFreshLocation(timeoutMs: Long): CurrentLocation? = CurrentLocation.Default
+    override suspend fun setManualLocation(location: CurrentLocation) {}
+    override fun isLocationEnabled(): Boolean = true
+    override fun startLocationUpdates() {}
+    override fun stopLocationUpdates() {}
 }

@@ -33,7 +33,7 @@ interface LocationRepository {
     suspend fun getLastKnownLocation(): CurrentLocation?
     suspend fun getFreshLocation(timeoutMs: Long = 10000): CurrentLocation?
     suspend fun setManualLocation(location: CurrentLocation)
-    suspend fun isLocationEnabled(): Boolean
+    fun isLocationEnabled(): Boolean
     fun startLocationUpdates()
     fun stopLocationUpdates()
 }

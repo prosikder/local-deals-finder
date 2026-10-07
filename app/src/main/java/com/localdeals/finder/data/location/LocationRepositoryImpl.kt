@@ -124,7 +124,7 @@ class LocationRepositoryImpl @Inject constructor(
         // The prompt says: A shared CurrentLocation holder (granted GPS or the manual pick).
     }
 
-    override suspend fun isLocationEnabled(): Boolean {
+    override fun isLocationEnabled(): Boolean {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
