@@ -26,6 +26,11 @@ interface CategoryRepository {
     fun getCategories(): Flow<List<Category>>
 }
 
+interface ReviewRepository {
+    fun getReviewsForDeal(dealId: String): Flow<List<Review>>
+    suspend fun addReview(review: Review)
+}
+
 interface ChatRepository {
     fun getMessages(userId1: String, userId2: String): Flow<List<ChatMessage>>
     suspend fun sendMessage(message: ChatMessage)

@@ -5,6 +5,7 @@ import com.localdeals.finder.domain.repository.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -98,6 +99,42 @@ class MockCategoryRepository @Inject constructor() : CategoryRepository {
     private val categories = MutableStateFlow<List<Category>>(MockData.categories)
 
     override fun getCategories(): Flow<List<Category>> = categories.asStateFlow()
+}
+
+@Singleton
+class MockReviewRepository @Inject constructor() : ReviewRepository {
+    private val reviews = MutableStateFlow<List<Review>>(
+        MockData.deals.take(15).flatMap { deal ->
+            listOf(
+                Review(
+                    id = "rev_1_${deal.id}",
+                    dealId = deal.id,
+                    userId = "user_1",
+                    userName = "Rahim Ahmed",
+                    rating = 5,
+                    comment = "Excellent deal! Highly recommend.",
+                    timestampMillis = System.currentTimeMillis() - 86400000 * 2
+                ),
+                Review(
+                    id = "rev_2_${deal.id}",
+                    dealId = deal.id,
+                    userId = "user_2",
+                    userName = "Sadia Islam",
+                    rating = 4,
+                    comment = "Good value for money, but the store was a bit crowded.",
+                    timestampMillis = System.currentTimeMillis() - 86400000 * 5
+                )
+            )
+        }
+    )
+
+    override fun getReviewsForDeal(dealId: String): Flow<List<Review>> {
+        return reviews.map { list -> list.filter { it.dealId == dealId } }
+    }
+
+    override suspend fun addReview(review: Review) {
+        reviews.value = reviews.value + review
+    }
 }
 
 @Singleton

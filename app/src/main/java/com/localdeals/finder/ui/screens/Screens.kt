@@ -32,14 +32,7 @@ fun SplashScreen() { PlaceholderScreen("Splash Screen", null, null) }
 @Composable
 fun MapScreen() { PlaceholderScreen("Map Screen") }
 
-@Composable
-fun SearchScreen() { PlaceholderScreen("Search Screen") }
 
-@Composable
-fun CategoryScreen(categoryId: String?) { PlaceholderScreen("Category Screen: $categoryId") }
-
-@Composable
-fun DealDetailsScreen(dealId: String?) { PlaceholderScreen("Deal Details Screen: $dealId") }
 
 @Composable
 fun SellerStoreScreen(sellerId: String?) { PlaceholderScreen("Seller Store Screen: $sellerId") }

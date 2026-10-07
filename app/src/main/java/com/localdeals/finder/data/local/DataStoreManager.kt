@@ -3,6 +3,7 @@ package com.localdeals.finder.data.local
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,7 @@ class DataStoreManager @Inject constructor(
     companion object {
         val LOGGED_IN_USER_ID = stringPreferencesKey("logged_in_user_id")
         val MANUAL_LOCATION = stringPreferencesKey("manual_location")
+        val RECENT_SEARCHES = stringSetPreferencesKey("recent_searches")
     }
 
     val loggedInUserId: Flow<String?> = context.dataStore.data.map { preferences ->
@@ -44,6 +46,29 @@ class DataStoreManager @Inject constructor(
     suspend fun saveManualLocation(latLngName: String) {
         context.dataStore.edit { preferences ->
             preferences[MANUAL_LOCATION] = latLngName
+        }
+    }
+
+    val recentSearches: Flow<Set<String>> = context.dataStore.data.map { preferences ->
+        preferences[RECENT_SEARCHES] ?: emptySet()
+    }
+
+    suspend fun addRecentSearch(query: String) {
+        if (query.isBlank()) return
+        context.dataStore.edit { preferences ->
+            val current = preferences[RECENT_SEARCHES] ?: emptySet()
+            // Keep up to 10 recent searches, remove oldest if needed
+            val updated = buildList {
+                add(query.trim())
+                addAll(current.filter { it.trim().lowercase() != query.trim().lowercase() })
+            }.take(10).toSet()
+            preferences[RECENT_SEARCHES] = updated
+        }
+    }
+
+    suspend fun clearRecentSearches() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(RECENT_SEARCHES)
         }
     }
 }

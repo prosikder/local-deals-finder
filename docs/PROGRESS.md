@@ -28,9 +28,9 @@
 | 3 | Login & User Profile | done |
 | 4 | Location Permission | done |
 | 5 | Home Screen | done |
-| 6 | Search & Categories | NEXT |
-| 7 | Deal & Product Details | pending |
-| 8 | Map & Nearby Deals (offline) | pending |
+| 6 | Search & Categories | done |
+| 7 | Deal & Product Details | done |
+| 8 | Map & Nearby Deals (offline) | NEXT |
 | 9 | Seller Store Profile | pending |
 | 10 | Chat & Order Request (local) | pending |
 | 11 | Wishlist, Reviews & Notifications | pending |
@@ -48,6 +48,8 @@ Status values: done / current / next / pending
 - **Step 3 (2026-10-06):** Implemented Local Auth with SHA-256 password hashing and DataStore session persistence. Added `AuthUseCases` with JUnit tests. Created `LoginScreen`, `RegisterScreen`, and `ProfileScreen`. Updated `SplashViewModel` to auto-route based on session state. Added seeded Admin account (`admin@local.app`).
 - **Step 4 (2026-10-07):** Added Location Permission handling with `LocationRepositoryImpl` using `LocationManager`. Handled granted, denied, GPS off states, and manual fallback using DataStore to store predefined Dhaka areas. Implemented `LocationUtils` (Haversine distance, bearing) with unit tests. *Fixes*: Removed `suspend` modifier from `isLocationEnabled` interface method to fix build errors, and changed `LocationViewModel` to extend `androidx.lifecycle.ViewModel` directly (Hilt KSP issue with `BaseViewModel` generics).
 - **Step 5 (2026-10-07):** Created `MockData` with realistic Dhaka coordinates, BDT prices, and 40 deals across 8 categories and 12 sellers. Built `HomeScreen` with location header, search bar, horizontal category chips, hot deals sorted by distance/discount, ending soon deals with live countdown, and nearby stores. Added `GetNearbyDealsUseCase` (with unit tests) and `HomeViewModel` managing `UiState` via `StateFlow` with pull-to-refresh. Updated `EmptyState` to support action buttons.
+- **Step 6 (2026-10-07):** Added `SearchScreen` and `CategoryScreen`. Implemented `SearchDealsUseCase` supporting category, price, discount, rating, and distance filters, along with sorting (Nearest, Biggest Discount, Cheapest, Top Rated). Added unit tests for searching and filtering. Built a `FiltersBottomSheet` used by both screens. Updated `DataStoreManager` to save and clear recent searches. Connected navigation from Home to Search and Category flows.
+- **Step 7 (2026-10-07):** Implemented `DealDetailsScreen` with an image gradient placeholder, title, struck-through original price, discount badge, live ticking expiration countdown, stock, distance from user, description, and seller mini-card. Added `ReviewRepository` and `MockReviewRepository` generating fake reviews for deals. Built `DealDetailsViewModel` to coordinate deal, seller, location, and reviews. Connected navigation to seller store.
 
 ## Known Issues
 
@@ -60,9 +62,11 @@ Status values: done / current / next / pending
 - **Step 3:** The app successfully runs unit tests for validation and hashing. The app can login with the seeded Admin account or register a new user, and it persists the session across restarts using DataStore. Profile allows editing details.
 - **Step 4:** Haversine and Bearing unit tests pass. The app prompts for location permissions and handles GPS vs manual selection fallback. Coordinates are successfully retrieved via LocationManager or DataStore.
 - **Step 5:** `GetNearbyDealsUseCase` unit tests pass (verifies correct sorting by discount and distance score). The app compiles and runs. `HomeScreen` correctly displays hot deals, categories, and nearby stores, navigating appropriately.
+- **Step 6:** `SearchDealsUseCase` unit tests pass (verifies search by query and filters/sorting). Live search works with debounce. Recent searches are saved and displayed when the search bar is active and empty. `FiltersBottomSheet` properly applies state. Navigation from `Home` to `Search` and `Category` is functional.
+- **Step 7:** `DealDetailsScreen` successfully loads deal, seller, and mock reviews. The live countdown ticks every second. Navigation from `SearchScreen` to `DealDetailsScreen` and then to `SellerStoreScreen` works correctly.
 
 ## Resume Note
 
-- **Last completed step:** Step 5
-- **Next prompt:** Prompt 6
-- **Unfinished work / things the next window must know:** `LocationViewModel` directly extends `androidx.lifecycle.ViewModel` instead of `BaseViewModel<T>` to avoid Hilt KSP generic resolution issues. `HomeScreen` is implemented with static gradients, BDT currency, and dynamic countdowns.
+- **Last completed step:** Step 7
+- **Next prompt:** Prompt 8
+- **Unfinished work / things the next window must know:** `LocationViewModel` directly extends `androidx.lifecycle.ViewModel` instead of `BaseViewModel<T>` to avoid Hilt KSP generic resolution issues. `DealDetailsScreen` uses a floating "Request Order" button which is currently a no-op (waiting for Order Request prompt).

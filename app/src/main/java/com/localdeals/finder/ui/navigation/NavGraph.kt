@@ -108,7 +108,14 @@ fun NavGraph(
             )
         }
         composable(Screen.Map.route) { MapScreen() }
-        composable(Screen.Search.route) { SearchScreen() }
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToDeal = { dealId ->
+                    navController.navigate(Screen.DealDetails.createRoute(dealId))
+                }
+            )
+        }
         composable(Screen.Wishlist.route) { WishlistScreen() }
         composable(Screen.Profile.route) { 
             ProfileScreen(
@@ -122,10 +129,20 @@ fun NavGraph(
 
         // Details & Deep Links
         composable(Screen.Category.route) { backStackEntry ->
-            CategoryScreen(categoryId = backStackEntry.arguments?.getString("categoryId"))
+            CategoryScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToDeal = { dealId ->
+                    navController.navigate(Screen.DealDetails.createRoute(dealId))
+                }
+            )
         }
         composable(Screen.DealDetails.route) { backStackEntry ->
-            DealDetailsScreen(dealId = backStackEntry.arguments?.getString("dealId"))
+            DealDetailsScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToSeller = { sellerId ->
+                    navController.navigate(Screen.SellerStore.createRoute(sellerId))
+                }
+            )
         }
         composable(Screen.SellerStore.route) { backStackEntry ->
             SellerStoreScreen(sellerId = backStackEntry.arguments?.getString("sellerId"))
