@@ -1,5 +1,6 @@
 package com.localdeals.finder.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,7 +9,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,12 +22,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import android.content.Intent
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.localdeals.finder.domain.model.Deal
 import com.localdeals.finder.domain.model.Review
+import com.localdeals.finder.domain.usecase.DealStatus
 import com.localdeals.finder.ui.UiState
+import com.localdeals.finder.ui.components.DealCard
+
 import com.localdeals.finder.ui.components.DiscountBadge
 import com.localdeals.finder.ui.components.EmptyState
 import com.localdeals.finder.ui.components.StoreCard
@@ -35,9 +48,21 @@ import java.util.*
 fun DealDetailsScreen(
     onBack: () -> Unit,
     onNavigateToSeller: (String) -> Unit,
+    onNavigateToDeal: (String) -> Unit,
+    onNavigateToChat: (String) -> Unit,
     viewModel: DealDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    fun shareDeal(deal: Deal) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, deal.title)
+            putExtra(Intent.EXTRA_TEXT, "Check out this deal: ${deal.title} for ৳${deal.discountedPrice} on Local Deals Finder!")
+        }
+        context.startActivity(Intent.createChooser(intent, "Share Deal"))
+    }
 
     Scaffold(
         topBar = {
@@ -46,6 +71,21 @@ fun DealDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    if (uiState is UiState.Success) {
+                        val data = (uiState as UiState.Success<DealDetailsData>).data
+                        IconButton(onClick = { viewModel.toggleWishlist() }) {
+                            Icon(
+                                if (data.isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = "Wishlist",
+                                tint = if (data.isWishlisted) Color.Red else LocalContentColor.current
+                            )
+                        }
+                        IconButton(onClick = { shareDeal(data.deal) }) {
+                            Icon(Icons.Default.Share, contentDescription = "Share")
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -117,6 +157,24 @@ fun DealDetailsScreen(
                                     )
                                     DiscountBadge(percentage = deal.discountPercentage)
                                 }
+                                
+                                // Status Badge
+                                if (data.status != DealStatus.ACTIVE) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    val (text, color) = when (data.status) {
+                                        DealStatus.OUT_OF_STOCK -> "Out of Stock" to MaterialTheme.colorScheme.error
+                                        DealStatus.EXPIRED -> "Expired" to MaterialTheme.colorScheme.error
+                                        DealStatus.ENDING_SOON -> "Ending Soon" to Color(0xFFF57C00)
+                                        else -> "" to Color.Transparent
+                                    }
+                                    SuggestionChip(
+                                        onClick = { },
+                                        label = { Text(text, color = color, fontWeight = FontWeight.Bold) },
+                                        colors = SuggestionChipDefaults.suggestionChipColors(containerColor = color.copy(alpha = 0.1f)),
+                                        border = SuggestionChipDefaults.suggestionChipBorder(enabled = true, borderColor = color)
+                                    )
+                                }
+                                
                                 Spacer(modifier = Modifier.height(16.dp))
                                 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -191,6 +249,30 @@ fun DealDetailsScreen(
                             }
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                         }
+                        
+                        // Related Deals
+                        if (data.relatedDeals.isNotEmpty()) {
+                            item {
+                                Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                                    Text("More deals like this", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    LazyRow(
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        items(data.relatedDeals) { related ->
+                                            Box(modifier = Modifier.width(280.dp)) {
+                                                DealCard(
+                                                    deal = related,
+                                                    onClick = { onNavigateToDeal(related.id) }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                            }
+                        }
 
                         // Reviews
                         item {
@@ -220,19 +302,34 @@ fun DealDetailsScreen(
                     }
 
                     // Floating Action Button at bottom (Get Deal)
+                    val actionDisabled = data.status == DealStatus.OUT_OF_STOCK || data.status == DealStatus.EXPIRED
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp),
                         contentAlignment = Alignment.BottomCenter
                     ) {
-                        Button(
-                            onClick = { /* Will be implemented in future prompt */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        ) {
-                            Text("Request Order", style = MaterialTheme.typography.titleMedium)
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            FilledTonalButton(
+                                onClick = { onNavigateToChat(seller.userId) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(56.dp)
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Chat")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Chat")
+                            }
+                            
+                            Button(
+                                onClick = { /* Will be implemented in future prompt */ },
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .height(56.dp),
+                                enabled = !actionDisabled
+                            ) {
+                                Text("Request Order", style = MaterialTheme.typography.titleMedium)
+                            }
                         }
                     }
                 }

@@ -10,6 +10,9 @@ import com.localdeals.finder.domain.repository.DealRepository
 import com.localdeals.finder.domain.repository.LocationRepository
 import com.localdeals.finder.domain.repository.ReviewRepository
 import com.localdeals.finder.domain.repository.SellerRepository
+import com.localdeals.finder.domain.repository.WishlistRepository
+import com.localdeals.finder.domain.usecase.DealStatus
+import com.localdeals.finder.domain.usecase.GetDealStatusUseCase
 import com.localdeals.finder.ui.UiState
 import com.localdeals.finder.util.LocationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +27,10 @@ data class DealDetailsData(
     val deal: Deal,
     val seller: Seller,
     val reviews: List<Review>,
-    val distanceMeters: Int?
+    val distanceMeters: Int?,
+    val status: DealStatus,
+    val isWishlisted: Boolean,
+    val relatedDeals: List<Deal>
 )
 
 @HiltViewModel
@@ -33,6 +39,8 @@ class DealDetailsViewModel @Inject constructor(
     private val sellerRepository: SellerRepository,
     private val locationRepository: LocationRepository,
     private val reviewRepository: ReviewRepository,
+    private val wishlistRepository: WishlistRepository,
+    private val getDealStatusUseCase: GetDealStatusUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -63,24 +71,52 @@ class DealDetailsViewModel @Inject constructor(
 
                 val reviews = reviewRepository.getReviewsForDeal(dealId).firstOrNull() ?: emptyList()
                 val location = locationRepository.locationFlow.firstOrNull()
+                val isWishlisted = wishlistRepository.isWishlisted(dealId).firstOrNull() ?: false
                 
+                val allDeals = dealRepository.getDeals().firstOrNull() ?: emptyList()
+                val relatedDeals = allDeals.filter { 
+                    it.id != dealId && (it.sellerId == deal.sellerId || it.categoryId == deal.categoryId) 
+                }.take(5)
+
                 val distanceMeters = if (location != null) {
                     (LocationUtils.haversineDistance(
                         location.latitude, location.longitude,
                         seller.latitude, seller.longitude
                     ) * 1000).toInt()
                 } else null
+                
+                val status = getDealStatusUseCase(deal)
 
                 _uiState.value = UiState.Success(
                     DealDetailsData(
                         deal = deal,
                         seller = seller,
                         reviews = reviews,
-                        distanceMeters = distanceMeters
+                        distanceMeters = distanceMeters,
+                        status = status,
+                        isWishlisted = isWishlisted,
+                        relatedDeals = relatedDeals
                     )
                 )
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.message ?: "Failed to load details")
+            }
+        }
+    }
+
+    fun toggleWishlist() {
+        viewModelScope.launch {
+            val state = _uiState.value
+            if (state is UiState.Success) {
+                val current = state.data.isWishlisted
+                if (current) {
+                    wishlistRepository.removeFromWishlist(dealId)
+                } else {
+                    wishlistRepository.addToWishlist(dealId)
+                }
+                // Refresh wishlist state
+                val updated = wishlistRepository.isWishlisted(dealId).firstOrNull() ?: false
+                _uiState.value = state.copy(data = state.data.copy(isWishlisted = updated))
             }
         }
     }

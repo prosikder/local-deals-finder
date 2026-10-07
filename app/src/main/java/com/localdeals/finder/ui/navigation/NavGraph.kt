@@ -11,6 +11,10 @@ import com.localdeals.finder.domain.model.Role
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 
 @Composable
 fun NavGraph(
@@ -136,11 +140,21 @@ fun NavGraph(
                 }
             )
         }
-        composable(Screen.DealDetails.route) { backStackEntry ->
+        composable(
+            route = Screen.DealDetails.route,
+            enterTransition = { fadeIn() + slideInHorizontally { it / 4 } },
+            exitTransition = { fadeOut() + slideOutHorizontally { it / 4 } }
+        ) { backStackEntry ->
             DealDetailsScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToSeller = { sellerId ->
                     navController.navigate(Screen.SellerStore.createRoute(sellerId))
+                },
+                onNavigateToDeal = { dealId ->
+                    navController.navigate(Screen.DealDetails.createRoute(dealId))
+                },
+                onNavigateToChat = { userId ->
+                    navController.navigate(Screen.Chat.createRoute(userId))
                 }
             )
         }

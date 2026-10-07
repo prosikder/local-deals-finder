@@ -51,3 +51,10 @@ interface LocationRepository {
     fun startLocationUpdates()
     fun stopLocationUpdates()
 }
+
+interface WishlistRepository {
+    fun getWishlist(): Flow<List<Deal>>
+    suspend fun addToWishlist(dealId: String)
+    suspend fun removeFromWishlist(dealId: String)
+    fun isWishlisted(dealId: String): Flow<Boolean>
+}

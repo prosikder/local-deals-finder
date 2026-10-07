@@ -136,8 +136,41 @@ fun SearchScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             item {
-                                Text("${data.results.size} results found", style = MaterialTheme.typography.labelMedium)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("${data.results.size} results found", style = MaterialTheme.typography.labelMedium)
+                                    val hasActiveFilters = data.filters.categoryId != null || data.filters.minRating != null || data.filters.maxDistanceMeters != null
+                                    if (hasActiveFilters) {
+                                        TextButton(onClick = { viewModel.resetFilters() }) {
+                                            Text("Clear Filters")
+                                        }
+                                    }
+                                }
                             }
+                            
+                            val activeFilters = buildList {
+                                data.filters.categoryId?.let { catId -> data.categories.find { it.id == catId }?.let { add(it.name) } }
+                                data.filters.minRating?.let { add("$it+ Stars") }
+                                data.filters.maxDistanceMeters?.let { add("< ${it/1000}km") }
+                            }
+                            
+                            if (activeFilters.isNotEmpty()) {
+                                item {
+                                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        items(activeFilters) { filterLabel ->
+                                            InputChip(
+                                                selected = true,
+                                                onClick = { },
+                                                label = { Text(filterLabel) }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            
                             items(data.results, key = { it.id }) { deal ->
                                 DealCard(
                                     deal = deal,
@@ -242,6 +275,19 @@ fun FiltersBottomSheet(
                     FilterChip(
                         selected = currentFilters.maxDistanceMeters == dist,
                         onClick = { currentFilters = currentFilters.copy(maxDistanceMeters = dist) },
+                        label = { Text(label) }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text("Minimum Rating", style = MaterialTheme.typography.titleMedium)
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val ratings = listOf(null to "Any", 3.0 to "3+", 4.0 to "4+", 4.5 to "4.5+")
+                items(ratings) { (rating, label) ->
+                    FilterChip(
+                        selected = currentFilters.minRating == rating,
+                        onClick = { currentFilters = currentFilters.copy(minRating = rating) },
                         label = { Text(label) }
                     )
                 }

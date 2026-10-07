@@ -59,4 +59,10 @@ abstract class AppModule {
     abstract fun bindLocationRepository(
         locationRepositoryImpl: com.localdeals.finder.data.location.LocationRepositoryImpl
     ): LocationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWishlistRepository(
+        mockWishlistRepository: MockWishlistRepository
+    ): WishlistRepository
 }

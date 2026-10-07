@@ -170,3 +170,28 @@ class MockLocationRepository @Inject constructor() : LocationRepository {
     override fun startLocationUpdates() {}
     override fun stopLocationUpdates() {}
 }
+
+@Singleton
+class MockWishlistRepository @Inject constructor(
+    private val dealRepository: DealRepository
+) : WishlistRepository {
+    private val wishlistedDealIds = MutableStateFlow<Set<String>>(emptySet())
+
+    override fun getWishlist(): Flow<List<Deal>> {
+        return kotlinx.coroutines.flow.combine(dealRepository.getDeals(), wishlistedDealIds) { deals, ids ->
+            deals.filter { ids.contains(it.id) }
+        }
+    }
+
+    override suspend fun addToWishlist(dealId: String) {
+        wishlistedDealIds.value = wishlistedDealIds.value + dealId
+    }
+
+    override suspend fun removeFromWishlist(dealId: String) {
+        wishlistedDealIds.value = wishlistedDealIds.value - dealId
+    }
+
+    override fun isWishlisted(dealId: String): Flow<Boolean> {
+        return wishlistedDealIds.map { ids -> ids.contains(dealId) }
+    }
+}
