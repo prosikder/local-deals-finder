@@ -214,7 +214,7 @@ fun MapCanvas(
 
     // Derived clustered points for performance
     // Automatically re-calculates when deals or zoom changes
-    val clusteredPins by remember(uiState.deals, uiState.sellers, centerLat, centerLng, zoom) {
+    val clusteredPins by remember(uiState.deals, uiState.sellers) {
         derivedStateOf {
             val pins = mutableListOf<MapPin>()
             val clusterThresholdPixels = 50f
