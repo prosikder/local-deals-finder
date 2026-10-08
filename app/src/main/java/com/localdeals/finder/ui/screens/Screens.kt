@@ -29,9 +29,6 @@ fun SplashScreen() { PlaceholderScreen("Splash Screen", null, null) }
 
 
 
-@Composable
-fun MapScreen() { PlaceholderScreen("Map Screen") }
-
 
 
 @Composable

@@ -111,7 +111,13 @@ fun NavGraph(
                 }
             )
         }
-        composable(Screen.Map.route) { MapScreen() }
+        composable(Screen.Map.route) {
+            MapScreen(
+                onNavigateToDeal = { dealId ->
+                    navController.navigate(Screen.DealDetails.createRoute(dealId))
+                }
+            )
+        }
         composable(Screen.Search.route) {
             SearchScreen(
                 onBack = { navController.popBackStack() },
