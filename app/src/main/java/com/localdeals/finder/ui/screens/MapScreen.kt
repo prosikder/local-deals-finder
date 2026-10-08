@@ -42,7 +42,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.localdeals.finder.domain.model.Deal
 import com.localdeals.finder.domain.model.Seller
 import com.localdeals.finder.ui.components.DealCard
+import com.localdeals.finder.util.DrawUtils
 import com.localdeals.finder.util.MapProjection
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import kotlin.math.hypot
 
 data class MapPin(
@@ -53,6 +55,27 @@ data class MapPin(
     val lat: Double,
     val lng: Double
 )
+
+@OptIn(ExperimentalTextApi::class)
+fun DrawScope.safeDrawText(
+    textMeasurer: TextMeasurer,
+    text: String,
+    topLeft: Offset,
+    style: TextStyle
+) {
+    val safeSize = DrawUtils.calculateSafeTextBounds(
+        topLeft.x, topLeft.y, size.width, size.height
+    )
+    if (safeSize != null) {
+        drawText(
+            textMeasurer = textMeasurer,
+            text = text,
+            topLeft = topLeft,
+            style = style,
+            size = safeSize
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -375,7 +398,7 @@ fun MapCanvas(
                     drawCircle(primaryColor, 10f, Offset(locX, locY))
                     drawCircle(Color.White, 6f, Offset(locX, locY))
                     
-                    drawText(
+                    safeDrawText(
                         textMeasurer = textMeasurer,
                         text = "You are here",
                         topLeft = Offset(locX + 15f, locY - 10f),
@@ -402,7 +425,7 @@ fun MapCanvas(
                     
                     if (pin.isCluster) {
                         // Draw cluster count badge
-                        drawText(
+                        safeDrawText(
                             textMeasurer = textMeasurer,
                             text = "${pin.count}",
                             topLeft = Offset(x + 10f, y - 45f),
@@ -415,7 +438,7 @@ fun MapCanvas(
                         )
                     } else {
                         // Draw discount badge
-                        drawText(
+                        safeDrawText(
                             textMeasurer = textMeasurer,
                             text = "-${pin.deal.discountPercentage}%",
                             topLeft = Offset(x + 12f, y - 45f),

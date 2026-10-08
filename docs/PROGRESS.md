@@ -57,6 +57,10 @@ Status values: done / current / next / pending
 
 - None
 
+## Known Pitfalls
+
+- **Canvas `drawText` Crash:** Never call `drawText` near a canvas edge without clamping or passing an explicit `size`. If the available space calculated internally by `drawText` becomes negative (e.g., when drawing objects in a culling buffer zone slightly outside the viewable canvas), it will throw `IllegalArgumentException: maxHeight must be >= than minHeight`. Always use a safe wrapper like `DrawScope.safeDrawText` that uses `coerceAtLeast(0f)` for available width and height.
+
 ## Manual Test Results
 
 - **Step 1:** Ran gradle build successfully, the project successfully compiles, the empty screen shows "Local Deals Finder" with the custom theme.
