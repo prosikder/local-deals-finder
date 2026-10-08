@@ -22,7 +22,11 @@ data class Seller(
     val latitude: Double,
     val longitude: Double,
     val rating: Double = 0.0,
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val description: String = "",
+    val phoneNumber: String = "",
+    val openingHours: Map<String, String> = emptyMap(),
+    val status: String = "ACTIVE" // ACTIVE, SUSPENDED
 )
 
 data class Category(
@@ -49,6 +53,7 @@ data class Deal(
 data class Review(
     val id: String,
     val dealId: String,
+    val sellerId: String,
     val userId: String,
     val userName: String,
     val rating: Int,

@@ -28,6 +28,7 @@ interface CategoryRepository {
 
 interface ReviewRepository {
     fun getReviewsForDeal(dealId: String): Flow<List<Review>>
+    fun getReviewsForSeller(sellerId: String): Flow<List<Review>>
     suspend fun addReview(review: Review)
 }
 
@@ -57,4 +58,11 @@ interface WishlistRepository {
     suspend fun addToWishlist(dealId: String)
     suspend fun removeFromWishlist(dealId: String)
     fun isWishlisted(dealId: String): Flow<Boolean>
+}
+
+interface StoreFavoriteRepository {
+    fun getFavoriteStores(): Flow<List<Seller>>
+    suspend fun addFavorite(sellerId: String)
+    suspend fun removeFavorite(sellerId: String)
+    fun isFavorite(sellerId: String): Flow<Boolean>
 }

@@ -65,4 +65,10 @@ abstract class AppModule {
     abstract fun bindWishlistRepository(
         mockWishlistRepository: MockWishlistRepository
     ): WishlistRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStoreFavoriteRepository(
+        mockStoreFavoriteRepository: MockStoreFavoriteRepository
+    ): StoreFavoriteRepository
 }

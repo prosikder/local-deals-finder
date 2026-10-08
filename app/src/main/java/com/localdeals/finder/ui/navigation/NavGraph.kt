@@ -165,7 +165,16 @@ fun NavGraph(
             )
         }
         composable(Screen.SellerStore.route) { backStackEntry ->
-            SellerStoreScreen(sellerId = backStackEntry.arguments?.getString("sellerId"))
+            SellerStoreScreen(
+                sellerId = backStackEntry.arguments?.getString("sellerId") ?: "",
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDeal = { dealId ->
+                    navController.navigate(Screen.DealDetails.createRoute(dealId))
+                },
+                onNavigateToChat = { sellerId ->
+                    navController.navigate(Screen.Chat.createRoute(sellerId))
+                }
+            )
         }
         composable(Screen.Chat.route) { backStackEntry ->
             ChatScreen(userId = backStackEntry.arguments?.getString("userId"))

@@ -18,14 +18,19 @@ object MockData {
     )
 
     val sellers = listOf(
-        Seller("s_1", "user_s1", "Bhai Bhai Super Shop", "Mirpur 10, Dhaka", 23.8223, 90.3654, 4.5, "gradient_1"),
-        Seller("s_2", "user_s2", "Dhaka Electronics", "Multiplan Center, Elephant Road", 23.7386, 90.3882, 4.8, "gradient_2"),
-        Seller("s_3", "user_s3", "Fashion Plus", "Bashundhara City, Panthapath", 23.7497, 90.3900, 4.2, "gradient_3"),
-        Seller("s_4", "user_s4", "Fresh Bites", "Banani, Block C", 23.7940, 90.4043, 4.7, "gradient_4"),
+        Seller("s_1", "user_s1", "Bhai Bhai Super Shop", "Mirpur 10, Dhaka", 23.8223, 90.3654, 4.5, "gradient_1", 
+            description = "Best local shop for your daily needs.", phoneNumber = "01711000001", openingHours = mapOf("Monday" to "09:00-22:00", "Tuesday" to "09:00-22:00", "Wednesday" to "09:00-22:00", "Thursday" to "09:00-22:00", "Friday" to "14:00-23:00", "Saturday" to "09:00-22:00", "Sunday" to "09:00-22:00")),
+        Seller("s_2", "user_s2", "Dhaka Electronics", "Multiplan Center, Elephant Road", 23.7386, 90.3882, 4.8, "gradient_2", 
+            description = "All kinds of electronics and gadgets.", openingHours = mapOf("Monday" to "10:00-20:00")), // only Monday
+        Seller("s_3", "user_s3", "Fashion Plus", "Bashundhara City, Panthapath", 23.7497, 90.3900, 4.2, "gradient_3", 
+            status = "SUSPENDED"),
+        Seller("s_4", "user_s4", "Fresh Bites", "Banani, Block C", 23.7940, 90.4043, 4.7, "gradient_4", 
+            openingHours = mapOf("Friday" to "18:00-02:00", "Saturday" to "18:00-02:00")), // overnight hours
         Seller("s_5", "user_s5", "Daily Grocery", "Gulshan 1, Dhaka", 23.7806, 90.4162, 4.1, "gradient_5"),
         Seller("s_6", "user_s6", "Gadget Hub", "Jamuna Future Park, Kuril", 23.8136, 90.4243, 4.9, "gradient_6"),
         Seller("s_7", "user_s7", "Aesthetic Beauty", "Dhanmondi 27", 23.7548, 90.3755, 4.4, "gradient_7"),
-        Seller("s_8", "user_s8", "Healthy Life Pharmacy", "Uttara Sector 11", 23.8759, 90.3938, 4.6, "gradient_8"),
+        Seller("s_8", "user_s8", "Healthy Life Pharmacy", "Uttara Sector 11", 23.8759, 90.3938, 4.6, "gradient_8", 
+            openingHours = mapOf("Monday" to "00:00-23:59", "Tuesday" to "00:00-23:59", "Wednesday" to "00:00-23:59", "Thursday" to "00:00-23:59", "Friday" to "00:00-23:59", "Saturday" to "00:00-23:59", "Sunday" to "00:00-23:59")), // 24/7
         Seller("s_9", "user_s9", "Quick Fix Services", "Motijheel, Dhaka", 23.7330, 90.4172, 4.0, "gradient_9"),
         Seller("s_10", "user_s10", "Home Decor BD", "Badda, Dhaka", 23.7805, 90.4267, 4.3, "gradient_10"),
         Seller("s_11", "user_s11", "Mayer Doa Hotel", "Mohakhali, Dhaka", 23.7779, 90.3999, 3.9, "gradient_11"),

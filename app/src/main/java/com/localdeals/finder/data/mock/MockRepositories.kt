@@ -109,6 +109,7 @@ class MockReviewRepository @Inject constructor() : ReviewRepository {
                 Review(
                     id = "rev_1_${deal.id}",
                     dealId = deal.id,
+                    sellerId = deal.sellerId,
                     userId = "user_1",
                     userName = "Rahim Ahmed",
                     rating = 5,
@@ -118,6 +119,7 @@ class MockReviewRepository @Inject constructor() : ReviewRepository {
                 Review(
                     id = "rev_2_${deal.id}",
                     dealId = deal.id,
+                    sellerId = deal.sellerId,
                     userId = "user_2",
                     userName = "Sadia Islam",
                     rating = 4,
@@ -130,6 +132,10 @@ class MockReviewRepository @Inject constructor() : ReviewRepository {
 
     override fun getReviewsForDeal(dealId: String): Flow<List<Review>> {
         return reviews.map { list -> list.filter { it.dealId == dealId } }
+    }
+
+    override fun getReviewsForSeller(sellerId: String): Flow<List<Review>> {
+        return reviews.map { list -> list.filter { it.sellerId == sellerId } }
     }
 
     override suspend fun addReview(review: Review) {
@@ -193,5 +199,30 @@ class MockWishlistRepository @Inject constructor(
 
     override fun isWishlisted(dealId: String): Flow<Boolean> {
         return wishlistedDealIds.map { ids -> ids.contains(dealId) }
+    }
+}
+
+@Singleton
+class MockStoreFavoriteRepository @Inject constructor(
+    private val sellerRepository: SellerRepository
+) : StoreFavoriteRepository {
+    private val favoriteSellerIds = MutableStateFlow<Set<String>>(emptySet())
+
+    override fun getFavoriteStores(): Flow<List<Seller>> {
+        return kotlinx.coroutines.flow.combine(sellerRepository.getSellers(), favoriteSellerIds) { sellers, ids ->
+            sellers.filter { ids.contains(it.id) }
+        }
+    }
+
+    override suspend fun addFavorite(sellerId: String) {
+        favoriteSellerIds.value = favoriteSellerIds.value + sellerId
+    }
+
+    override suspend fun removeFavorite(sellerId: String) {
+        favoriteSellerIds.value = favoriteSellerIds.value - sellerId
+    }
+
+    override fun isFavorite(sellerId: String): Flow<Boolean> {
+        return favoriteSellerIds.map { ids -> ids.contains(sellerId) }
     }
 }
