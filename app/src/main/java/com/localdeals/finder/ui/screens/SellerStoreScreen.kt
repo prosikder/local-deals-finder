@@ -174,7 +174,10 @@ fun StoreHeader(seller: Seller, uiState: SellerStoreUiState) {
                 
                 if (uiState.distanceMeters != null) {
                     Spacer(Modifier.width(8.dp))
-                    Text("• ${uiState.distanceMeters / 1000.0} km away", style = MaterialTheme.typography.bodySmall)
+                    val distStr = com.localdeals.finder.util.FormatUtils.formatDistance(uiState.distanceMeters)
+                    if (distStr.isNotEmpty()) {
+                        Text("• $distStr away", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
             
@@ -216,7 +219,7 @@ fun DealsTab(uiState: SellerStoreUiState, onNavigateToDeal: (String) -> Unit) {
     } else {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

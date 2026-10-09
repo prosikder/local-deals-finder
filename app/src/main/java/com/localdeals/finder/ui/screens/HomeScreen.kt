@@ -54,19 +54,16 @@ fun HomeScreen(
                 HomeTopBar(
                     locationName = data.location.name,
                     onChangeLocation = onNavigateToLocation,
-                    onSearchClick = onNavigateToSearch
+                    onSearchClick = onNavigateToSearch,
+                    onNavigateGallery = onNavigateGallery
                 )
             } else {
                 HomeTopBar(
                     locationName = "Loading...",
                     onChangeLocation = onNavigateToLocation,
-                    onSearchClick = onNavigateToSearch
+                    onSearchClick = onNavigateToSearch,
+                    onNavigateGallery = onNavigateGallery
                 )
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateGallery) {
-                Text("UI")
             }
         }
     ) { paddingValues ->
@@ -111,7 +108,8 @@ fun HomeScreen(
 fun HomeTopBar(
     locationName: String,
     onChangeLocation: () -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
+    onNavigateGallery: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -122,27 +120,40 @@ fun HomeTopBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onChangeLocation() }
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = "Location",
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = "Current Location",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { onChangeLocation() },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Location",
+                    tint = MaterialTheme.colorScheme.primary
                 )
-                Text(
-                    text = locationName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = "Current Location",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = locationName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            val context = androidx.compose.ui.platform.LocalContext.current
+            val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+            if (isDebug) {
+                TextButton(onClick = onNavigateGallery) {
+                    Text("UI Gallery")
+                }
             }
         }
         

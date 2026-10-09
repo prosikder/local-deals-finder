@@ -71,23 +71,17 @@ fun DealCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${deal.distanceMeters}m away",
+                            text = "${com.localdeals.finder.util.FormatUtils.formatDistance(deal.distanceMeters)} away",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
-                val remaining = deal.expirationTimeMillis - System.currentTimeMillis()
-                if (remaining > 0) {
-                    val days = remaining / (24 * 60 * 60 * 1000)
-                    val hours = (remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
-                    val timeStr = if (days > 0) "${days}d ${hours}h" else "${hours}h remaining"
-                    Text(
-                        text = timeStr,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+                Text(
+                    text = com.localdeals.finder.util.FormatUtils.formatCountdown(deal.expirationTimeMillis),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (com.localdeals.finder.util.FormatUtils.isExpired(deal.expirationTimeMillis)) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.error
+                )
             }
         }
     }

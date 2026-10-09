@@ -207,7 +207,8 @@ fun DealDetailsScreen(
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
-                                        val dist = data.distanceMeters?.let { "${it}m away" } ?: "Distance unknown"
+                                        val distStr = com.localdeals.finder.util.FormatUtils.formatDistance(data.distanceMeters)
+                                        val dist = if (distStr.isNotEmpty()) "$distStr away" else "Distance unknown"
                                         Text(dist, style = MaterialTheme.typography.bodyMedium)
                                     }
                                     
@@ -349,33 +350,15 @@ fun LiveCountdownText(expirationTimeMillis: Long) {
         }
     }
 
-    val remaining = expirationTimeMillis - currentTime
-    if (remaining > 0) {
-        val days = remaining / (24 * 60 * 60 * 1000)
-        val hours = (remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
-        val mins = (remaining % (60 * 60 * 1000)) / (60 * 1000)
-        val secs = (remaining % (60 * 1000)) / 1000
-        
-        val timeStr = if (days > 0) {
-            "${days}d ${hours}h ${mins}m remaining"
-        } else {
-            String.format("%02d:%02d:%02d remaining", hours, mins, secs)
-        }
-        
-        Text(
-            text = "Ends in: $timeStr",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.error,
-            fontWeight = FontWeight.Bold
-        )
-    } else {
-        Text(
-            text = "Expired",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.error,
-            fontWeight = FontWeight.Bold
-        )
-    }
+    val timeStr = com.localdeals.finder.util.FormatUtils.formatCountdown(expirationTimeMillis, currentTime)
+    val isExpired = com.localdeals.finder.util.FormatUtils.isExpired(expirationTimeMillis, currentTime)
+    
+    Text(
+        text = if (isExpired) "Expired" else "Ends in: $timeStr",
+        style = MaterialTheme.typography.bodyMedium,
+        color = if (isExpired) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
+        fontWeight = FontWeight.Bold
+    )
 }
 
 @Composable
