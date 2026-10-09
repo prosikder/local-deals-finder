@@ -268,68 +268,73 @@ fun ReviewsTab(uiState: SellerStoreUiState) {
 
 @Composable
 fun AboutTab(seller: Seller, context: android.content.Context) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxSize()) {
-        Text("Contact", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(8.dp))
-        
-        if (seller.phoneNumber.isNotEmpty()) {
+    LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize(),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp)
+    ) {
+        item {
+            Text("Contact", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            
+            if (seller.phoneNumber.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${seller.phoneNumber}"))
+                            context.startActivity(intent)
+                        }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Call, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(16.dp))
+                    Text(seller.phoneNumber, style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+            
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${seller.phoneNumber}"))
-                        context.startActivity(intent)
+                        val uri = Uri.parse("geo:${seller.latitude},${seller.longitude}?q=${seller.latitude},${seller.longitude}(${Uri.encode(seller.businessName)})")
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(context, "No maps app installed", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.Call, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(16.dp))
-                Text(seller.phoneNumber, style = MaterialTheme.typography.bodyLarge)
-            }
-        }
-        
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    val uri = Uri.parse("geo:${seller.latitude},${seller.longitude}?q=${seller.latitude},${seller.longitude}(${Uri.encode(seller.businessName)})")
-                    val intent = Intent(Intent.ACTION_VIEW, uri)
-                    try {
-                        context.startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(context, "No maps app installed", Toast.LENGTH_SHORT).show()
-                    }
+                Column {
+                    Text(seller.address, style = MaterialTheme.typography.bodyLarge)
+                    Text("Get Directions", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                 }
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.width(16.dp))
-            Column {
-                Text(seller.address, style = MaterialTheme.typography.bodyLarge)
-                Text("Get Directions", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
             }
-        }
-        
-        Spacer(Modifier.height(16.dp))
-        HorizontalDivider()
-        Spacer(Modifier.height(16.dp))
-        
-        Text("Opening Hours", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(8.dp))
-        
-        val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-        if (seller.openingHours.isEmpty()) {
-            Text("No opening hours provided.", style = MaterialTheme.typography.bodyMedium)
-        } else {
-            days.forEach { day ->
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(day, style = MaterialTheme.typography.bodyMedium)
-                    Text(seller.openingHours[day] ?: "Closed", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+            
+            Text("Opening Hours", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            
+            val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+            if (seller.openingHours.isEmpty()) {
+                Text("No opening hours provided.", style = MaterialTheme.typography.bodyMedium)
+            } else {
+                days.forEach { day ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(day, style = MaterialTheme.typography.bodyMedium)
+                        Text(seller.openingHours[day] ?: "Closed", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
