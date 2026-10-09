@@ -133,6 +133,9 @@ fun NavGraph(
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true } // Clear back stack
                     }
+                },
+                onNavigateToOrders = {
+                    navController.navigate(Screen.MyOrders.route)
                 }
             )
         }
@@ -161,6 +164,9 @@ fun NavGraph(
                 },
                 onNavigateToChat = { userId ->
                     navController.navigate(Screen.Chat.createRoute(userId))
+                },
+                onNavigateToOrder = { dealId ->
+                    navController.navigate(Screen.OrderRequest.createRoute(dealId))
                 }
             )
         }
@@ -176,13 +182,36 @@ fun NavGraph(
                 }
             )
         }
+        composable(Screen.ChatList.route) {
+            ChatListScreen(
+                onNavigateToChat = { userId ->
+                    navController.navigate(Screen.Chat.createRoute(userId))
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable(Screen.Chat.route) { backStackEntry ->
-            ChatScreen(userId = backStackEntry.arguments?.getString("userId"))
+            ChatScreen(
+                userId = backStackEntry.arguments?.getString("userId"),
+                onBack = { navController.popBackStack() }
+            )
         }
         composable(Screen.OrderRequest.route) { backStackEntry ->
-            OrderRequestScreen(dealId = backStackEntry.arguments?.getString("dealId"))
+            OrderRequestScreen(
+                dealId = backStackEntry.arguments?.getString("dealId"),
+                onBack = { navController.popBackStack() },
+                onOrderSuccess = {
+                    navController.navigate(Screen.MyOrders.route) {
+                        popUpTo(Screen.OrderRequest.route) { inclusive = true }
+                    }
+                }
+            )
         }
-        composable(Screen.MyOrders.route) { MyOrdersScreen() }
+        composable(Screen.MyOrders.route) { 
+            MyOrdersScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable(Screen.Review.route) { backStackEntry ->
             ReviewScreen(dealId = backStackEntry.arguments?.getString("dealId"))
         }

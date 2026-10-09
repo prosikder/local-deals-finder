@@ -15,6 +15,7 @@ interface DealRepository {
     fun getDeals(): Flow<List<Deal>>
     suspend fun getDealById(id: String): Deal?
     suspend fun addDeal(deal: Deal)
+    suspend fun updateDeal(deal: Deal)
 }
 
 interface SellerRepository {
@@ -34,12 +35,24 @@ interface ReviewRepository {
 
 interface ChatRepository {
     fun getMessages(userId1: String, userId2: String): Flow<List<ChatMessage>>
+    fun getUnreadCount(userId: String): Flow<Int>
+    fun isTyping(userId1: String, userId2: String): Flow<Boolean>
     suspend fun sendMessage(message: ChatMessage)
+    suspend fun markAsRead(userId1: String, userId2: String)
 }
 
 interface OrderRepository {
     fun getOrdersForUser(userId: String): Flow<List<OrderRequest>>
     suspend fun createOrder(order: OrderRequest)
+    suspend fun updateOrderStatus(orderId: String, newStatus: OrderStatus)
+    fun setSimulatorEnabled(enabled: Boolean)
+    fun isSimulatorEnabled(): Flow<Boolean>
+}
+
+interface NotificationRepository {
+    fun getNotifications(userId: String): Flow<List<AppNotification>>
+    suspend fun addNotification(notification: AppNotification)
+    suspend fun markAsRead(notificationId: String)
 }
 
 interface LocationRepository {

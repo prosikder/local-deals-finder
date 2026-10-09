@@ -32,8 +32,8 @@
 | 7 | Deal & Product Details | done |
 | 8 | Map & Nearby Deals (offline) | NEXT |
 | 9 | Seller Store Profile | pending |
-| 10 | Chat & Order Request (local) | pending |
-| 11 | Wishlist, Reviews & Notifications | pending |
+| 10 | Chat & Order Request (local) | done |
+| 11 | Wishlist, Reviews & Notifications | NEXT |
 | 12 | Seller Dashboard & Admin Panel | pending |
 | 13 | Local Offline Database (Room) | pending |
 | 14 | Security, Analytics, Testing & Optimization | pending |
@@ -58,6 +58,7 @@ Status values: done / current / next / pending
 - **Step 9 Polish (2026-10-09):** Added a centralized `FormatUtils` to enforce unified distance and countdown text across all screens (Home, Search, Category, Store, Details). Fixed deals grid top padding in SellerStoreScreen to prevent clipping. Verified that `HomeViewModel` correctly excludes expired deals from the "Ending Soon" row. Moved the "UI Gallery" component gallery debug button to the `HomeTopBar` specifically for `BuildConfig.DEBUG` environments.
   - *Note for Prompt 15:* The `ComponentGallery` and its debug button must be completely stripped out in the final release builds.
 - **Step 9 Fixes (2026-10-09):** Added dummy phone numbers (e.g. 01000000001) and realistic fallback descriptions for most seed sellers. Excluded two sellers from having a phone number to test the hidden-Call scenario. Updated `AboutTab` in `SellerStoreScreen` to use a `LazyColumn` with bottom padding so all opening hours rows are accessible. Confirmed ACTION_DIAL intent correctly triggers for the Call row.
+- **Step 10 (2026-10-09):** Implemented the local-only Chat and Order Request flow. Added `ChatListScreen` and `ChatScreen` with an auto-reply simulator mimicking seller context-aware responses (e.g. "Yes, it's in stock!"). Added `OrderRequestScreen` where users select quantity, add a note, and confirm phone number, hooking it up to the Deals view. Designed `MyOrdersScreen` to show status chips and allow cancellations for pending orders. Implemented an `OrderLifecycle` domain use-case with unit tests handling PENDING -> ACCEPTED -> READY -> COMPLETED state transitions. Added stock decrementing and an order lifecycle simulator background coroutine tied to a debug toggle.
 
 ## Known Issues
 
@@ -80,6 +81,6 @@ Status values: done / current / next / pending
 
 ## Resume Note
 
-- **Last completed step:** Step 8
-- **Next prompt:** Prompt 9
-- **Unfinished work / things the next window must know:** `LocationViewModel` directly extends `androidx.lifecycle.ViewModel` instead of `BaseViewModel<T>` to avoid Hilt KSP generic resolution issues. `DealDetailsScreen` uses a floating "Request Order" button which is currently a no-op (waiting for Order Request prompt).
+- **Last completed step:** Step 10
+- **Next prompt:** Prompt 11
+- **Unfinished work / things the next window must know:** In `MockRepositories.kt`, Coroutine `GlobalScope` is used to simulate auto-replies and order status lifecycle. Future implementation of Room should replace this with a proper backend or `WorkManager`. `MyOrdersScreen` is accessible from the Profile screen and `ChatListScreen` is routed but might lack a prominent entry point on the UI except via `ProfileScreen` or `SellerStoreScreen`.

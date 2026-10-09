@@ -50,6 +50,7 @@ fun DealDetailsScreen(
     onNavigateToSeller: (String) -> Unit,
     onNavigateToDeal: (String) -> Unit,
     onNavigateToChat: (String) -> Unit,
+    onNavigateToOrder: (String) -> Unit,
     viewModel: DealDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -323,7 +324,7 @@ fun DealDetailsScreen(
                             }
                             
                             Button(
-                                onClick = { /* Will be implemented in future prompt */ },
+                                onClick = { onNavigateToOrder(deal.id) },
                                 modifier = Modifier
                                     .weight(2f)
                                     .height(56.dp),

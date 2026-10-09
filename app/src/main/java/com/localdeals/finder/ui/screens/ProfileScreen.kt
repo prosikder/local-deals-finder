@@ -17,6 +17,7 @@ import com.localdeals.finder.ui.components.PrimaryButton
 @Composable
 fun ProfileScreen(
     onLogout: () -> Unit,
+    onNavigateToOrders: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -34,7 +35,12 @@ fun ProfileScreen(
         }
         is UiState.Success -> {
             val user = (state as UiState.Success<User>).data
-            ProfileContent(user = user, onSave = { viewModel.updateProfile(it) }, onLogout = { viewModel.logout(onLogout) })
+            ProfileContent(
+                user = user, 
+                onSave = { viewModel.updateProfile(it) }, 
+                onLogout = { viewModel.logout(onLogout) },
+                onNavigateToOrders = onNavigateToOrders
+            )
         }
         else -> {}
     }
@@ -42,7 +48,7 @@ fun ProfileScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileContent(user: User, onSave: (User) -> Unit, onLogout: () -> Unit) {
+fun ProfileContent(user: User, onSave: (User) -> Unit, onLogout: () -> Unit, onNavigateToOrders: () -> Unit) {
     var name by remember { mutableStateOf(user.name) }
     var phone by remember { mutableStateOf(user.phone) }
     var radius by remember { mutableStateOf(user.searchRadiusKm) }
@@ -90,9 +96,19 @@ fun ProfileContent(user: User, onSave: (User) -> Unit, onLogout: () -> Unit) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        OutlinedButton(
+            onClick = onNavigateToOrders,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("My Orders")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        
         Button(
             onClick = onLogout,
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Logout")
         }

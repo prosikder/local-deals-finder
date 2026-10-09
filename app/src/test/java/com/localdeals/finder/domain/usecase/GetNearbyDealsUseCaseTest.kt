@@ -20,6 +20,7 @@ class GetNearbyDealsUseCaseTest {
         override fun getDeals(): Flow<List<Deal>> = fakeDeals
         override suspend fun getDealById(id: String): Deal? = null
         override suspend fun addDeal(deal: Deal) {}
+        override suspend fun updateDeal(deal: Deal) {}
     }
 
     private val sellerRepository = object : SellerRepository {

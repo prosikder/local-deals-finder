@@ -66,8 +66,13 @@ data class ChatMessage(
     val senderId: String,
     val receiverId: String,
     val content: String,
-    val timestampMillis: Long
+    val timestampMillis: Long,
+    val isRead: Boolean = false
 )
+
+enum class OrderStatus {
+    PENDING, ACCEPTED, READY, COMPLETED, REJECTED, CANCELLED
+}
 
 data class OrderRequest(
     val id: String,
@@ -75,7 +80,10 @@ data class OrderRequest(
     val buyerId: String,
     val sellerId: String,
     val quantity: Int,
-    val status: String // PENDING, ACCEPTED, REJECTED, COMPLETED
+    val note: String = "",
+    val phoneConfirmation: String = "",
+    val status: OrderStatus = OrderStatus.PENDING,
+    val timestampMillis: Long = System.currentTimeMillis()
 )
 
 data class AppNotification(

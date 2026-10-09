@@ -71,4 +71,10 @@ abstract class AppModule {
     abstract fun bindStoreFavoriteRepository(
         mockStoreFavoriteRepository: MockStoreFavoriteRepository
     ): StoreFavoriteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRepository(
+        mockNotificationRepository: MockNotificationRepository
+    ): NotificationRepository
 }
