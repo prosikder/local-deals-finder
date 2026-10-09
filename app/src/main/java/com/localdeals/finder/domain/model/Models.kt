@@ -92,5 +92,6 @@ data class AppNotification(
     val title: String,
     val message: String,
     val timestampMillis: Long,
-    val isRead: Boolean
+    val isRead: Boolean,
+    val deepLinkUrl: String = ""
 )

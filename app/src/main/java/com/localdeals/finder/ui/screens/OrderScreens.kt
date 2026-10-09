@@ -138,6 +138,7 @@ fun OrderRequestScreen(
 @Composable
 fun MyOrdersScreen(
     onBack: () -> Unit,
+    onNavigateToReview: (String) -> Unit,
     viewModel: MyOrdersViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -173,7 +174,8 @@ fun MyOrdersScreen(
                     items(uiState.orders) { orderData ->
                         OrderCard(
                             orderData = orderData,
-                            onCancel = { viewModel.cancelOrder(orderData.order.id) }
+                            onCancel = { viewModel.cancelOrder(orderData.order.id) },
+                            onReview = { onNavigateToReview(orderData.deal?.id ?: "") }
                         )
                     }
                 }
@@ -183,7 +185,7 @@ fun MyOrdersScreen(
 }
 
 @Composable
-fun OrderCard(orderData: OrderWithDeal, onCancel: () -> Unit) {
+fun OrderCard(orderData: OrderWithDeal, onCancel: () -> Unit, onReview: () -> Unit) {
     val order = orderData.order
     val deal = orderData.deal
 
@@ -234,6 +236,14 @@ fun OrderCard(orderData: OrderWithDeal, onCancel: () -> Unit) {
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
                     Text("Cancel Order")
+                }
+            } else if (order.status == OrderStatus.COMPLETED) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = onReview,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Leave a Review")
                 }
             }
         }

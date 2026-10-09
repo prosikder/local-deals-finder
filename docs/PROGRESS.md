@@ -33,8 +33,8 @@
 | 8 | Map & Nearby Deals (offline) | NEXT |
 | 9 | Seller Store Profile | pending |
 | 10 | Chat & Order Request (local) | done |
-| 11 | Wishlist, Reviews & Notifications | NEXT |
-| 12 | Seller Dashboard & Admin Panel | pending |
+| 11 | Wishlist, Reviews & Notifications | done |
+| 12 | Seller Dashboard & Admin Panel | NEXT |
 | 13 | Local Offline Database (Room) | pending |
 | 14 | Security, Analytics, Testing & Optimization | pending |
 | 15 | Final Integration & Play Store Release | pending |
@@ -59,6 +59,7 @@ Status values: done / current / next / pending
   - *Note for Prompt 15:* The `ComponentGallery` and its debug button must be completely stripped out in the final release builds.
 - **Step 9 Fixes (2026-10-09):** Added dummy phone numbers (e.g. 01000000001) and realistic fallback descriptions for most seed sellers. Excluded two sellers from having a phone number to test the hidden-Call scenario. Updated `AboutTab` in `SellerStoreScreen` to use a `LazyColumn` with bottom padding so all opening hours rows are accessible. Confirmed ACTION_DIAL intent correctly triggers for the Call row.
 - **Step 10 (2026-10-09):** Implemented the local-only Chat and Order Request flow. Added `ChatListScreen` and `ChatScreen` with an auto-reply simulator mimicking seller context-aware responses (e.g. "Yes, it's in stock!"). Added `OrderRequestScreen` where users select quantity, add a note, and confirm phone number, hooking it up to the Deals view. Designed `MyOrdersScreen` to show status chips and allow cancellations for pending orders. Implemented an `OrderLifecycle` domain use-case with unit tests handling PENDING -> ACCEPTED -> READY -> COMPLETED state transitions. Added stock decrementing and an order lifecycle simulator background coroutine tied to a debug toggle.
+- **Step 11 (2026-10-09):** Implemented Engagement features. Created `WishlistScreen` with alert toggles, sorting, and empty state. Implemented `ReviewScreen` for users to rate and comment on completed orders, updating the seller's average rating dynamically (tested with `UpdateSellerRatingUseCase`). Built in-app `NotificationsScreen` with swipe-to-delete and mark-all-as-read features. Added `POST_NOTIFICATIONS` runtime permission on Android 13+ in `MainActivity`. Configured a `WorkManager` job (`DealNotificationWorker`) to check for expiring wishlist deals and trigger system notifications. Implemented deep-link intents routing for notifications (order, chat, deal).
 
 ## Known Issues
 
@@ -78,9 +79,12 @@ Status values: done / current / next / pending
 - **Step 6:** `SearchDealsUseCase` unit tests pass (verifies search by query and filters/sorting). Live search works with debounce. Recent searches are saved and displayed when the search bar is active and empty. `FiltersBottomSheet` properly applies state including min-rating. Active filters render correctly with a clear button. Navigation from `Home` to `Search` and `Category` is functional.
 - **Step 7:** `DealDetailsScreen` loads fully. Live countdown ticks properly. Share intent triggers contextually. UI appropriately disables "Request Order" for out of stock / expired items, and shows status chips (Ending Soon, Out of Stock, Expired). `GetDealStatusUseCase` passes all stock and expiration rule tests. Navigation supports custom transitions.
 - **Step 8:** `MapProjectionTest` passes, accurately translating between pixel coordinates and lat/lng. The map renders performantly with off-screen culling and `derivedStateOf`. Tap detection resolves to the nearest pin. Map/List toggle changes view states successfully, and filter chips dynamically update displayed deals. Intents to open external map apps work with graceful fallbacks.
+- **Step 9:** `IsStoreOpenUseCase` passes unit tests. Store profile tabs display correctly, Action buttons (Dial/Directions) trigger appropriate intents.
+- **Step 10:** Local order lifecycle simulator works. Auto-reply logic triggers in Chat screen correctly. Order Request form captures input and correctly reduces stock when approved.
+- **Step 11:** `UpdateSellerRatingUseCase` unit tests pass. App requests notification permissions gracefully on Android 13+. WorkManager PeriodicWorkRequest successfully scheduled on app launch. Deep link intents properly resolved by `NavGraph`.
 
 ## Resume Note
 
-- **Last completed step:** Step 10
-- **Next prompt:** Prompt 11
-- **Unfinished work / things the next window must know:** In `MockRepositories.kt`, Coroutine `GlobalScope` is used to simulate auto-replies and order status lifecycle. Future implementation of Room should replace this with a proper backend or `WorkManager`. `MyOrdersScreen` is accessible from the Profile screen and `ChatListScreen` is routed but might lack a prominent entry point on the UI except via `ProfileScreen` or `SellerStoreScreen`.
+- **Last completed step:** Step 11
+- **Next prompt:** Prompt 12
+- **Unfinished work / things the next window must know:** In `MockRepositories.kt`, Coroutine `GlobalScope` is used to simulate auto-replies and order status lifecycle. Future implementation of Room should replace this with a proper backend or `WorkManager`. `MyOrdersScreen` is accessible from the Profile screen and `ChatListScreen` is routed but might lack a prominent entry point on the UI except via `ProfileScreen` or `SellerStoreScreen`. Prompts 12 and 13 are the heaviest remaining; Prompt 12 should be split into Seller and Admin dashboards.

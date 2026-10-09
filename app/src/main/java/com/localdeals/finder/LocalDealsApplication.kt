@@ -26,5 +26,26 @@ class LocalDealsApplication : Application() {
                 defaultHandler?.uncaughtException(thread, throwable)
             }
         }
+        
+        scheduleNotificationWorker()
+    }
+    
+    private fun scheduleNotificationWorker() {
+        val constraints = androidx.work.Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .build()
+            
+        val workRequest = androidx.work.PeriodicWorkRequestBuilder<com.localdeals.finder.worker.DealNotificationWorker>(
+            24, java.util.concurrent.TimeUnit.HOURS,
+            1, java.util.concurrent.TimeUnit.HOURS
+        )
+            .setConstraints(constraints)
+            .build()
+            
+        androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "DealNotificationWorker",
+            androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
     }
 }

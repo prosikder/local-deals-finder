@@ -43,14 +43,7 @@ fun OrderRequestScreen(dealId: String?) { PlaceholderScreen("Order Request Scree
 @Composable
 fun MyOrdersScreen() { PlaceholderScreen("My Orders Screen") }
 
-@Composable
-fun ReviewScreen(dealId: String?) { PlaceholderScreen("Review Screen: $dealId") }
 
-@Composable
-fun WishlistScreen() { PlaceholderScreen("Wishlist Screen") }
-
-@Composable
-fun NotificationsScreen() { PlaceholderScreen("Notifications Screen") }
 
 
 

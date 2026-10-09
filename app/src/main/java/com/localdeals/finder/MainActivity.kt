@@ -41,6 +41,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             var crashLog by remember { mutableStateOf<String?>(null) }
             val context = LocalContext.current
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+                ) { isGranted ->
+                    // Handle permission if needed (graceful if denied is already handled by not crashing)
+                }
+                LaunchedEffect(Unit) {
+                    if (androidx.core.content.ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+                    ) {
+                        permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+            }
 
             LaunchedEffect(Unit) {
                 val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0

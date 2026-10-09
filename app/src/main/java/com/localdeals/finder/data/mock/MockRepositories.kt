@@ -103,6 +103,15 @@ class MockSellerRepository @Inject constructor() : SellerRepository {
     override fun getSellers(): Flow<List<Seller>> = sellers.asStateFlow()
 
     override suspend fun getSellerById(id: String): Seller? = sellers.value.find { it.id == id }
+
+    override suspend fun updateSeller(seller: Seller) {
+        val currentSellers = sellers.value.toMutableList()
+        val index = currentSellers.indexOfFirst { it.id == seller.id }
+        if (index != -1) {
+            currentSellers[index] = seller
+            sellers.value = currentSellers
+        }
+    }
 }
 
 @Singleton
@@ -303,6 +312,16 @@ class MockNotificationRepository @Inject constructor() : NotificationRepository 
             if (it.id == notificationId) it.copy(isRead = true) else it
         }
     }
+
+    override suspend fun markAllAsRead(userId: String) {
+        notifications.value = notifications.value.map {
+            if (it.userId == userId) it.copy(isRead = true) else it
+        }
+    }
+
+    override suspend fun deleteNotification(notificationId: String) {
+        notifications.value = notifications.value.filter { it.id != notificationId }
+    }
 }
 
 @Singleton
@@ -322,6 +341,7 @@ class MockWishlistRepository @Inject constructor(
     private val dealRepository: DealRepository
 ) : WishlistRepository {
     private val wishlistedDealIds = MutableStateFlow<Set<String>>(emptySet())
+    private val dealAlerts = MutableStateFlow<Map<String, Boolean>>(emptyMap())
 
     override fun getWishlist(): Flow<List<Deal>> {
         return kotlinx.coroutines.flow.combine(dealRepository.getDeals(), wishlistedDealIds) { deals, ids ->
@@ -331,6 +351,11 @@ class MockWishlistRepository @Inject constructor(
 
     override suspend fun addToWishlist(dealId: String) {
         wishlistedDealIds.value = wishlistedDealIds.value + dealId
+        val currentAlerts = dealAlerts.value.toMutableMap()
+        if (!currentAlerts.containsKey(dealId)) {
+            currentAlerts[dealId] = true // Default alert on
+            dealAlerts.value = currentAlerts
+        }
     }
 
     override suspend fun removeFromWishlist(dealId: String) {
@@ -339,6 +364,18 @@ class MockWishlistRepository @Inject constructor(
 
     override fun isWishlisted(dealId: String): Flow<Boolean> {
         return wishlistedDealIds.map { ids -> ids.contains(dealId) }
+    }
+
+    override fun isAlertEnabled(dealId: String): Flow<Boolean> {
+        return dealAlerts.map { alerts -> alerts[dealId] ?: false }
+    }
+
+    override fun getWishlistAlerts(): Flow<Map<String, Boolean>> = dealAlerts.asStateFlow()
+
+    override suspend fun setAlertEnabled(dealId: String, enabled: Boolean) {
+        val currentAlerts = dealAlerts.value.toMutableMap()
+        currentAlerts[dealId] = enabled
+        dealAlerts.value = currentAlerts
     }
 }
 

@@ -21,6 +21,7 @@ interface DealRepository {
 interface SellerRepository {
     fun getSellers(): Flow<List<Seller>>
     suspend fun getSellerById(id: String): Seller?
+    suspend fun updateSeller(seller: Seller)
 }
 
 interface CategoryRepository {
@@ -53,6 +54,8 @@ interface NotificationRepository {
     fun getNotifications(userId: String): Flow<List<AppNotification>>
     suspend fun addNotification(notification: AppNotification)
     suspend fun markAsRead(notificationId: String)
+    suspend fun markAllAsRead(userId: String)
+    suspend fun deleteNotification(notificationId: String)
 }
 
 interface LocationRepository {
@@ -71,6 +74,9 @@ interface WishlistRepository {
     suspend fun addToWishlist(dealId: String)
     suspend fun removeFromWishlist(dealId: String)
     fun isWishlisted(dealId: String): Flow<Boolean>
+    fun isAlertEnabled(dealId: String): Flow<Boolean>
+    fun getWishlistAlerts(): Flow<Map<String, Boolean>>
+    suspend fun setAlertEnabled(dealId: String, enabled: Boolean)
 }
 
 interface StoreFavoriteRepository {

@@ -126,7 +126,14 @@ fun NavGraph(
                 }
             )
         }
-        composable(Screen.Wishlist.route) { WishlistScreen() }
+        composable(Screen.Wishlist.route) { 
+            WishlistScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDeal = { dealId ->
+                    navController.navigate(Screen.DealDetails.createRoute(dealId))
+                }
+            )
+        }
         composable(Screen.Profile.route) { 
             ProfileScreen(
                 onLogout = {
@@ -151,6 +158,7 @@ fun NavGraph(
         }
         composable(
             route = Screen.DealDetails.route,
+            deepLinks = listOf(androidx.navigation.navDeepLink { uriPattern = "localdeals://app/deal/{dealId}" }),
             enterTransition = { fadeIn() + slideInHorizontally { it / 4 } },
             exitTransition = { fadeOut() + slideOutHorizontally { it / 4 } }
         ) { backStackEntry ->
@@ -190,7 +198,10 @@ fun NavGraph(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(Screen.Chat.route) { backStackEntry ->
+        composable(
+            route = Screen.Chat.route,
+            deepLinks = listOf(androidx.navigation.navDeepLink { uriPattern = "localdeals://app/chat/{userId}" })
+        ) { backStackEntry ->
             ChatScreen(
                 userId = backStackEntry.arguments?.getString("userId"),
                 onBack = { navController.popBackStack() }
@@ -207,15 +218,27 @@ fun NavGraph(
                 }
             )
         }
-        composable(Screen.MyOrders.route) { 
+        composable(
+            route = Screen.MyOrders.route,
+            deepLinks = listOf(androidx.navigation.navDeepLink { uriPattern = "localdeals://app/orders" })
+        ) { 
             MyOrdersScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onNavigateToReview = { dealId ->
+                    navController.navigate(Screen.Review.createRoute(dealId))
+                }
             )
         }
         composable(Screen.Review.route) { backStackEntry ->
-            ReviewScreen(dealId = backStackEntry.arguments?.getString("dealId"))
+            ReviewScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
-        composable(Screen.Notifications.route) { NotificationsScreen() }
+        composable(Screen.Notifications.route) { 
+            NotificationsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
         
         // Seller Dashboard
         composable(Screen.SellerDashboard.route) { SellerDashboardScreen() }
