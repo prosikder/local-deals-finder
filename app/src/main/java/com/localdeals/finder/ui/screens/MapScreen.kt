@@ -63,18 +63,16 @@ fun DrawScope.safeDrawText(
     topLeft: Offset,
     style: TextStyle
 ) {
-    val safeSize = DrawUtils.calculateSafeTextBounds(
-        topLeft.x, topLeft.y, size.width, size.height
+    // Manually measure the text to avoid drawText(String) automatically calculating 
+    // constraints based on Canvas size minus the topLeft offset, which crashes near edges.
+    val textLayoutResult = textMeasurer.measure(
+        text = text,
+        style = style
     )
-    if (safeSize != null) {
-        drawText(
-            textMeasurer = textMeasurer,
-            text = text,
-            topLeft = topLeft,
-            style = style,
-            size = safeSize
-        )
-    }
+    drawText(
+        textLayoutResult = textLayoutResult,
+        topLeft = topLeft
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
