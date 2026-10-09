@@ -119,9 +119,14 @@ fun OrderRequestScreen(
 
                     Button(
                         onClick = { viewModel.submitOrder() },
-                        modifier = Modifier.fillMaxWidth().height(56.dp)
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        enabled = !uiState.isLoading
                     ) {
-                        Text("Submit Order Request")
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+                        } else {
+                            Text("Submit Order Request")
+                        }
                     }
                 }
             }
