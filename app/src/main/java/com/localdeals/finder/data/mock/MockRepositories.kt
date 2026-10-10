@@ -254,8 +254,8 @@ class MockOrderRepository @Inject constructor(
             currentOrders[index] = order.copy(status = newStatus)
             orders.value = currentOrders
             
-            // If accepted, decrement stock
-            if (newStatus == OrderStatus.ACCEPTED) {
+            // If accepted and wasn't already, decrement stock
+            if (newStatus == OrderStatus.ACCEPTED && order.status != OrderStatus.ACCEPTED) {
                 val deal = dealRepository.getDealById(order.dealId)
                 if (deal != null) {
                     val updatedDeal = deal.copy(stock = deal.stock - order.quantity)
@@ -279,18 +279,32 @@ class MockOrderRepository @Inject constructor(
 
     override fun setSimulatorEnabled(enabled: Boolean) {
         simulatorEnabled.value = enabled
+        if (enabled) {
+            orders.value.filter { it.status == OrderStatus.PENDING || it.status == OrderStatus.ACCEPTED || it.status == OrderStatus.READY }
+                .forEach { simulateOrderLifecycle(it.id) }
+        }
     }
 
     override fun isSimulatorEnabled(): Flow<Boolean> = simulatorEnabled.asStateFlow()
 
     private fun simulateOrderLifecycle(orderId: String) {
         kotlinx.coroutines.GlobalScope.launch {
-            kotlinx.coroutines.delay(5000)
-            updateOrderStatus(orderId, OrderStatus.ACCEPTED)
-            kotlinx.coroutines.delay(5000)
-            updateOrderStatus(orderId, OrderStatus.READY)
-            kotlinx.coroutines.delay(5000)
-            updateOrderStatus(orderId, OrderStatus.COMPLETED)
+            var order = orders.value.find { it.id == orderId } ?: return@launch
+            
+            if (order.status == OrderStatus.PENDING) {
+                kotlinx.coroutines.delay(5000)
+                updateOrderStatus(orderId, OrderStatus.ACCEPTED)
+                order = orders.value.find { it.id == orderId } ?: return@launch
+            }
+            if (order.status == OrderStatus.ACCEPTED) {
+                kotlinx.coroutines.delay(5000)
+                updateOrderStatus(orderId, OrderStatus.READY)
+                order = orders.value.find { it.id == orderId } ?: return@launch
+            }
+            if (order.status == OrderStatus.READY) {
+                kotlinx.coroutines.delay(5000)
+                updateOrderStatus(orderId, OrderStatus.COMPLETED)
+            }
         }
     }
 }
