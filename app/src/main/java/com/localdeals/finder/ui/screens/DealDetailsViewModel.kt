@@ -41,6 +41,7 @@ class DealDetailsViewModel @Inject constructor(
     private val reviewRepository: ReviewRepository,
     private val wishlistRepository: WishlistRepository,
     private val getDealStatusUseCase: GetDealStatusUseCase,
+    private val dealAnalyticsUseCase: com.localdeals.finder.domain.usecase.DealAnalyticsUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -62,6 +63,7 @@ class DealDetailsViewModel @Inject constructor(
                     _uiState.value = UiState.Error("Deal not found")
                     return@launch
                 }
+                dealAnalyticsUseCase.recordView(dealId)
 
                 val seller = sellerRepository.getSellerById(deal.sellerId)
                 if (seller == null) {

@@ -17,6 +17,9 @@ interface DealRepository {
     suspend fun getDealById(id: String): Deal?
     suspend fun addDeal(deal: Deal)
     suspend fun updateDeal(deal: Deal)
+    suspend fun deleteDeal(id: String)
+    fun getDealStats(id: String): Flow<DealStats>
+    suspend fun incrementDealView(id: String)
 }
 
 interface SellerRepository {
@@ -46,6 +49,7 @@ interface ChatRepository {
 
 interface OrderRepository {
     fun getOrdersForUser(userId: String): Flow<List<OrderRequest>>
+    fun getOrdersForDeal(dealId: String): Flow<List<OrderRequest>>
     suspend fun createOrder(order: OrderRequest)
     suspend fun updateOrderStatus(orderId: String, newStatus: OrderStatus)
     fun setSimulatorEnabled(enabled: Boolean)
@@ -79,6 +83,7 @@ interface WishlistRepository {
     fun isAlertEnabled(dealId: String): Flow<Boolean>
     fun getWishlistAlerts(): Flow<Map<String, Boolean>>
     suspend fun setAlertEnabled(dealId: String, enabled: Boolean)
+    fun getWishlistCount(dealId: String): Flow<Int>
 }
 
 interface StoreFavoriteRepository {

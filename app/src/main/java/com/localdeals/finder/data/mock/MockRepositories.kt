@@ -106,6 +106,29 @@ class MockDealRepository @Inject constructor() : DealRepository {
             deals.value = currentDeals
         }
     }
+
+    override suspend fun deleteDeal(id: String) {
+        deals.value = deals.value.filter { it.id != id }
+    }
+
+    private val dealViews = MutableStateFlow<Map<String, Int>>(emptyMap())
+
+    override fun getDealStats(id: String): Flow<DealStats> {
+        return dealViews.map { viewsMap ->
+            DealStats(
+                dealId = id,
+                views = viewsMap[id] ?: 0,
+                wishlistAdds = 0, // Ignored here, aggregated in use-case
+                orders = 0
+            )
+        }
+    }
+
+    override suspend fun incrementDealView(id: String) {
+        val current = dealViews.value.toMutableMap()
+        current[id] = (current[id] ?: 0) + 1
+        dealViews.value = current
+    }
 }
 
 @Singleton
@@ -251,6 +274,10 @@ class MockOrderRepository @Inject constructor(
 
     override fun getOrdersForUser(userId: String): Flow<List<OrderRequest>> {
         return orders.map { list -> list.filter { it.buyerId == userId || it.sellerId == userId }.sortedByDescending { it.timestampMillis } }
+    }
+
+    override fun getOrdersForDeal(dealId: String): Flow<List<OrderRequest>> {
+        return orders.map { list -> list.filter { it.dealId == dealId } }
     }
 
     override suspend fun createOrder(order: OrderRequest) {
@@ -408,6 +435,10 @@ class MockWishlistRepository @Inject constructor(
         val currentAlerts = dealAlerts.value.toMutableMap()
         currentAlerts[dealId] = enabled
         dealAlerts.value = currentAlerts
+    }
+
+    override fun getWishlistCount(dealId: String): Flow<Int> {
+        return wishlistedDealIds.map { ids -> if (ids.contains(dealId)) 1 else 0 } // In mock, this just checks global set since it's an MVP mock
     }
 }
 

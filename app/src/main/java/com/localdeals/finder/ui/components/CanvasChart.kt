@@ -9,10 +9,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import com.localdeals.finder.ui.screens.safeDrawText
 
 @Composable
 fun CanvasChart(
@@ -42,7 +41,7 @@ fun CanvasChart(
             val yValue = maxData * i / ySteps
             val yPos = graphHeight - (i.toFloat() / ySteps) * graphHeight
             
-            drawText(
+            safeDrawText(
                 textMeasurer = textMeasurer,
                 text = yValue.toString(),
                 topLeft = Offset(0f, yPos - 10.dp.toPx()),

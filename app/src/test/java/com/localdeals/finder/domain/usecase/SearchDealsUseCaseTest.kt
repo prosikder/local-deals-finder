@@ -21,6 +21,9 @@ class SearchDealsUseCaseTest {
         override suspend fun getDealById(id: String): Deal? = null
         override suspend fun addDeal(deal: Deal) {}
         override suspend fun updateDeal(deal: Deal) {}
+        override suspend fun deleteDeal(id: String) {}
+        override fun getDealStats(id: String): Flow<com.localdeals.finder.domain.model.DealStats> = kotlinx.coroutines.flow.flowOf(com.localdeals.finder.domain.model.DealStats(id, 0, 0, 0))
+        override suspend fun incrementDealView(id: String) {}
     }
 
     private val sellerRepository = object : SellerRepository {

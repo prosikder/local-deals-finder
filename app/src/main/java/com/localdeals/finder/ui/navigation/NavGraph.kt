@@ -266,8 +266,13 @@ fun NavGraph(
                     navController.navigate(Screen.ChatList.route)
                 },
                 onNavigateToProfile = {
-                    navController.navigate(Screen.Profile.route)
+                    navController.navigate(Screen.StoreProfileEdit.route)
                 }
+            )
+        }
+        composable(Screen.StoreProfileEdit.route) {
+            com.localdeals.finder.ui.screens.StoreProfileEditScreen(
+                onBack = { navController.popBackStack() }
             )
         }
         composable(

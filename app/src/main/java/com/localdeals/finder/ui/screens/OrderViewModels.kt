@@ -99,7 +99,8 @@ class OrderRequestViewModel @Inject constructor(
 data class MyOrdersUiState(
     val isLoading: Boolean = false,
     val orders: List<OrderWithDeal> = emptyList(),
-    val isSimulatorEnabled: Boolean = false
+    val isSimulatorEnabled: Boolean = false,
+    val currentUserId: String = ""
 )
 
 data class OrderWithDeal(
@@ -129,7 +130,7 @@ class MyOrdersViewModel @Inject constructor(
                     val ordersWithDeals = orders.map { order ->
                         OrderWithDeal(order, deals.find { it.id == order.dealId })
                     }
-                    MyOrdersUiState(isLoading = false, orders = ordersWithDeals, isSimulatorEnabled = simEnabled)
+                    MyOrdersUiState(isLoading = false, orders = ordersWithDeals, isSimulatorEnabled = simEnabled, currentUserId = user.id)
                 }.collect {
                     _uiState.value = it
                 }
@@ -142,6 +143,15 @@ class MyOrdersViewModel @Inject constructor(
             val currentOrder = _uiState.value.orders.find { it.order.id == orderId }?.order
             if (currentOrder != null && OrderLifecycle.isValidTransition(currentOrder.status, OrderStatus.CANCELLED)) {
                 orderRepository.updateOrderStatus(orderId, OrderStatus.CANCELLED)
+            }
+        }
+    }
+
+    fun updateOrderStatus(orderId: String, status: OrderStatus) {
+        viewModelScope.launch {
+            val currentOrder = _uiState.value.orders.find { it.order.id == orderId }?.order
+            if (currentOrder != null && OrderLifecycle.isValidTransition(currentOrder.status, status)) {
+                orderRepository.updateOrderStatus(orderId, status)
             }
         }
     }

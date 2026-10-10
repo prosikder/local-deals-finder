@@ -174,8 +174,10 @@ fun MyOrdersScreen(
                     items(uiState.orders) { orderData ->
                         OrderCard(
                             orderData = orderData,
+                            currentUserId = uiState.currentUserId,
                             onCancel = { viewModel.cancelOrder(orderData.order.id) },
-                            onReview = { onNavigateToReview(orderData.deal?.id ?: "") }
+                            onReview = { onNavigateToReview(orderData.deal?.id ?: "") },
+                            onUpdateStatus = { status -> viewModel.updateOrderStatus(orderData.order.id, status) }
                         )
                     }
                 }
@@ -185,7 +187,13 @@ fun MyOrdersScreen(
 }
 
 @Composable
-fun OrderCard(orderData: OrderWithDeal, onCancel: () -> Unit, onReview: () -> Unit) {
+fun OrderCard(
+    orderData: OrderWithDeal, 
+    currentUserId: String,
+    onCancel: () -> Unit, 
+    onReview: () -> Unit,
+    onUpdateStatus: (OrderStatus) -> Unit = {}
+) {
     val order = orderData.order
     val deal = orderData.deal
 
@@ -228,22 +236,41 @@ fun OrderCard(orderData: OrderWithDeal, onCancel: () -> Unit, onReview: () -> Un
                 Text("Note: ${order.note}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             
-            if (order.status == OrderStatus.PENDING) {
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedButton(
-                    onClick = onCancel,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Cancel Order")
+            val isBuyer = order.buyerId == currentUserId
+            val isSeller = order.sellerId == currentUserId
+
+            if (isBuyer) {
+                if (order.status == OrderStatus.PENDING) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedButton(
+                        onClick = onCancel,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Cancel Order")
+                    }
+                } else if (order.status == OrderStatus.COMPLETED) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = onReview,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Leave a Review")
+                    }
                 }
-            } else if (order.status == OrderStatus.COMPLETED) {
+            }
+
+            if (isSeller) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = onReview,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Leave a Review")
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    if (order.status == OrderStatus.PENDING) {
+                        Button(onClick = { onUpdateStatus(OrderStatus.ACCEPTED) }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2))) { Text("Accept") }
+                        OutlinedButton(onClick = { onUpdateStatus(OrderStatus.REJECTED) }, colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)) { Text("Reject") }
+                    } else if (order.status == OrderStatus.ACCEPTED) {
+                        Button(onClick = { onUpdateStatus(OrderStatus.READY) }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA000))) { Text("Mark Ready") }
+                    } else if (order.status == OrderStatus.READY) {
+                        Button(onClick = { onUpdateStatus(OrderStatus.COMPLETED) }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C))) { Text("Complete") }
+                    }
                 }
             }
         }

@@ -19,6 +19,7 @@ data class SellerDashboardState(
     val totalViews: Int = 0,
     val chartData: List<Int> = emptyList(), // 7 day views
     val activeDeals: List<Deal> = emptyList(),
+    val dealStats: Map<String, DealStats> = emptyMap(),
     val error: String? = null
 )
 
@@ -27,7 +28,9 @@ class SellerDashboardViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val dealRepository: DealRepository,
     private val orderRepository: OrderRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val dealAnalyticsUseCase: com.localdeals.finder.domain.usecase.DealAnalyticsUseCase,
+    private val deleteDealUseCase: com.localdeals.finder.domain.usecase.DeleteDealUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SellerDashboardState())
@@ -62,7 +65,16 @@ class SellerDashboardViewModel @Inject constructor(
                 
                 // Mock chart data for 7 days
                 val chartData = listOf(12, 45, 23, 78, 56, 89, 41)
-                val totalViews = chartData.sum()
+                
+                val statsMap = mutableMapOf<String, DealStats>()
+                var totalViews = 0
+                for (deal in deals) {
+                    val stats = dealAnalyticsUseCase.getAnalytics(deal.id).firstOrNull()
+                    if (stats != null) {
+                        statsMap[deal.id] = stats
+                        totalViews += stats.views
+                    }
+                }
 
                 _state.value = _state.value.copy(
                     isLoading = false,
@@ -71,7 +83,8 @@ class SellerDashboardViewModel @Inject constructor(
                     unreadMessagesCount = unreadMessagesCount,
                     totalViews = totalViews,
                     chartData = chartData,
-                    activeDeals = deals
+                    activeDeals = deals,
+                    dealStats = statsMap
                 )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(isLoading = false, error = e.message)
@@ -84,6 +97,17 @@ class SellerDashboardViewModel @Inject constructor(
             val newStock = (deal.stock + increment).coerceAtLeast(0)
             dealRepository.updateDeal(deal.copy(stock = newStock))
             loadDashboardData()
+        }
+    }
+
+    fun deleteDeal(dealId: String) {
+        viewModelScope.launch {
+            val result = deleteDealUseCase.execute(dealId)
+            if (result.isSuccess) {
+                loadDashboardData()
+            } else {
+                _state.value = _state.value.copy(error = result.exceptionOrNull()?.message)
+            }
         }
     }
 }

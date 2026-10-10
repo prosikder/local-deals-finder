@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import com.localdeals.finder.ui.components.CanvasChart
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,6 +28,7 @@ fun SellerDashboardScreen(
     viewModel: SellerDashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var dealToDelete by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -97,7 +100,9 @@ fun SellerDashboardScreen(
                 state.activeDeals.forEach { deal ->
                     DealManageCard(
                         deal = deal,
+                        stats = state.dealStats[deal.id],
                         onEdit = { onNavigateToAddDeal() }, // Normally would pass ID, but placeholder for now
+                        onDelete = { dealToDelete = deal.id },
                         onStockIncrease = { viewModel.updateStock(deal, 1) },
                         onStockDecrease = { viewModel.updateStock(deal, -1) }
                     )
@@ -105,13 +110,32 @@ fun SellerDashboardScreen(
                 }
             }
         }
+
+        if (dealToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { dealToDelete = null },
+                title = { Text("Delete Deal") },
+                text = { Text("Are you sure you want to completely delete this deal? This action cannot be undone.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.deleteDeal(dealToDelete!!)
+                        dealToDelete = null
+                    }) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { dealToDelete = null }) { Text("Cancel") }
+                }
+            )
+        }
     }
 }
 
 @Composable
 fun DealManageCard(
     deal: com.localdeals.finder.domain.model.Deal,
+    stats: com.localdeals.finder.domain.model.DealStats?,
     onEdit: () -> Unit,
+    onDelete: () -> Unit,
     onStockIncrease: () -> Unit,
     onStockDecrease: () -> Unit
 ) {
@@ -138,6 +162,23 @@ fun DealManageCard(
                 TextButton(onClick = onEdit) {
                     Text("Edit")
                 }
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                }
+            }
+        }
+        
+        if (stats != null) {
+            HorizontalDivider()
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Views: ${stats.views}", style = MaterialTheme.typography.bodySmall)
+                Text("Wishlist: ${stats.wishlistAdds}", style = MaterialTheme.typography.bodySmall)
+                Text("Orders: ${stats.orders}", style = MaterialTheme.typography.bodySmall)
+                val conv = if (stats.views > 0) (stats.orders.toFloat() / stats.views.toFloat()) * 100f else 0f
+                Text("Conv: ${"%.1f".format(conv)}%", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
