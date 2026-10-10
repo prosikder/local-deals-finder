@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -42,6 +43,7 @@ fun HomeScreen(
     onNavigateToCategory: (String) -> Unit,
     onNavigateToDeal: (String) -> Unit,
     onNavigateToStore: (String) -> Unit,
+    onNavigateToNotifications: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -55,14 +57,16 @@ fun HomeScreen(
                     locationName = data.location.name,
                     onChangeLocation = onNavigateToLocation,
                     onSearchClick = onNavigateToSearch,
-                    onNavigateGallery = onNavigateGallery
+                    onNavigateGallery = onNavigateGallery,
+                    onNavigateNotifications = onNavigateToNotifications
                 )
             } else {
                 HomeTopBar(
                     locationName = "Loading...",
                     onChangeLocation = onNavigateToLocation,
                     onSearchClick = onNavigateToSearch,
-                    onNavigateGallery = onNavigateGallery
+                    onNavigateGallery = onNavigateGallery,
+                    onNavigateNotifications = onNavigateToNotifications
                 )
             }
         }
@@ -109,7 +113,8 @@ fun HomeTopBar(
     locationName: String,
     onChangeLocation: () -> Unit,
     onSearchClick: () -> Unit,
-    onNavigateGallery: () -> Unit
+    onNavigateGallery: () -> Unit,
+    onNavigateNotifications: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -154,6 +159,9 @@ fun HomeTopBar(
                 TextButton(onClick = onNavigateGallery) {
                     Text("UI Gallery")
                 }
+            }
+            IconButton(onClick = onNavigateNotifications) {
+                Icon(Icons.Default.Notifications, contentDescription = "Notifications")
             }
         }
         

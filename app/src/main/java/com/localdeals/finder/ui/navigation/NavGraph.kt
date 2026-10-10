@@ -108,6 +108,9 @@ fun NavGraph(
                 },
                 onNavigateToStore = { storeId ->
                     navController.navigate(Screen.SellerStore.createRoute(storeId))
+                },
+                onNavigateToNotifications = {
+                    navController.navigate(Screen.Notifications.route)
                 }
             )
         }
