@@ -290,7 +290,20 @@ fun NavGraph(
         }
 
         // Admin Panel
-        composable(Screen.AdminPanel.route) { AdminPanelScreen() }
+        composable(Screen.AdminPanel.route) { 
+            val adminViewModel: com.localdeals.finder.ui.screens.AdminDashboardViewModel = hiltViewModel()
+            AdminDashboardScreen(
+                viewModel = adminViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onLogout = {
+                    adminViewModel.logout {
+                        navController.navigate(Screen.Splash.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
 
         // Debug Gallery
         composable(Screen.ComponentGallery.route) {

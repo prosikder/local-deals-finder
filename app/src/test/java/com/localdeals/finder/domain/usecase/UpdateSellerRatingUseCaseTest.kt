@@ -23,6 +23,7 @@ class UpdateSellerRatingUseCaseTest {
         override suspend fun updateSeller(seller: Seller) {
             updatedSeller = seller
         }
+        override suspend fun updateSellerStatus(sellerId: String, status: String) {}
     }
 
     private val fakeReviewRepo = object : ReviewRepository {
@@ -40,6 +41,10 @@ class UpdateSellerRatingUseCaseTest {
             return flowOf(emptyList())
         }
         override suspend fun addReview(review: Review) {}
+        override fun getReportedReviews(): Flow<List<Review>> = flowOf(emptyList())
+        override suspend fun deleteReview(reviewId: String) {}
+        override suspend fun dismissReport(reviewId: String) {}
+        override suspend fun reportReview(reviewId: String) {}
     }
 
     @Test

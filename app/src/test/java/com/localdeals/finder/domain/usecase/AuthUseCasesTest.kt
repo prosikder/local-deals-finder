@@ -34,6 +34,17 @@ class FakeAuthRepository : AuthRepository {
     override suspend fun logout() {
         currentUser = null
     }
+
+    override fun getUsers(): kotlinx.coroutines.flow.Flow<List<User>> {
+        return kotlinx.coroutines.flow.flowOf(users)
+    }
+
+    override suspend fun updateUserStatus(userId: String, isBlocked: Boolean) {
+        val index = users.indexOfFirst { it.id == userId }
+        if (index != -1) {
+            users[index] = users[index].copy(isBlocked = isBlocked)
+        }
+    }
 }
 
 class AuthUseCasesTest {

@@ -31,6 +31,7 @@ class GetNearbyDealsUseCaseTest {
         override fun getSellers(): Flow<List<Seller>> = fakeSellers
         override suspend fun getSellerById(id: String): Seller? = null
         override suspend fun updateSeller(seller: Seller) {}
+        override suspend fun updateSellerStatus(sellerId: String, status: String) {}
     }
 
     private val useCase = GetNearbyDealsUseCase(dealRepository, sellerRepository)

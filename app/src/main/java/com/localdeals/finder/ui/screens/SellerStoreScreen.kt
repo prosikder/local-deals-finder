@@ -137,7 +137,7 @@ fun SellerStoreScreen(
                     
                     when (selectedTab) {
                         0 -> DealsTab(uiState, onNavigateToDeal)
-                        1 -> ReviewsTab(uiState)
+                        1 -> ReviewsTab(uiState, { viewModel.reportReview(it) })
                         2 -> AboutTab(seller, context)
                     }
                 }
@@ -231,7 +231,7 @@ fun DealsTab(uiState: SellerStoreUiState, onNavigateToDeal: (String) -> Unit) {
 }
 
 @Composable
-fun ReviewsTab(uiState: SellerStoreUiState) {
+fun ReviewsTab(uiState: SellerStoreUiState, onReportReview: (String) -> Unit) {
     if (uiState.reviews.isEmpty()) {
         Box(Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
             Text("No reviews yet.", style = MaterialTheme.typography.bodyLarge)
@@ -258,7 +258,7 @@ fun ReviewsTab(uiState: SellerStoreUiState) {
                 Spacer(Modifier.height(16.dp))
             }
             items(uiState.reviews) { review ->
-                ReviewItem(review)
+                ReviewItem(review, { onReportReview(review.id) })
             }
         }
     }

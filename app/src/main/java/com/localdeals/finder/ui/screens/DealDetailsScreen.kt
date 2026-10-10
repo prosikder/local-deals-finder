@@ -295,7 +295,10 @@ fun DealDetailsScreen(
                             }
                         } else {
                             items(data.reviews) { review ->
-                                ReviewItem(review = review)
+                                ReviewItem(
+                                    review = review,
+                                    onReport = { viewModel.reportReview(review.id) }
+                                )
                             }
                         }
                         
@@ -364,7 +367,7 @@ fun LiveCountdownText(expirationTimeMillis: Long) {
 }
 
 @Composable
-fun ReviewItem(review: Review) {
+fun ReviewItem(review: Review, onReport: () -> Unit = {}) {
     val sdf = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
     
     Column(
@@ -403,7 +406,10 @@ fun ReviewItem(review: Review) {
                     ) {
                         DropdownMenuItem(
                             text = { Text("Report Review") },
-                            onClick = { showMenu = false } // Add report logic here
+                            onClick = {
+                                showMenu = false
+                                onReport()
+                            }
                         )
                     }
                 }

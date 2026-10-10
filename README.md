@@ -30,3 +30,4 @@
 - Wishlist and user review system.
 - In-app push notifications (via WorkManager) and system notifications.
 - Seller Dashboard: Manage deals (Add, Edit, Delete with validaton and photos), Manage orders (auto-decrementing stock), Store profile edit, and per-deal conversion analytics.
+- Admin Panel: Comprehensive dashboard for managing users (block/unblock), sellers (suspend/approve), deals, review reports, categories, and platform analytics.

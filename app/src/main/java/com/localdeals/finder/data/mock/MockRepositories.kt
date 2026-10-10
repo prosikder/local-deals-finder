@@ -80,6 +80,15 @@ class MockAuthRepository @Inject constructor(
     override suspend fun logout() {
         dataStoreManager.clearSession()
     }
+
+    override fun getUsers(): Flow<List<User>> = kotlinx.coroutines.flow.flowOf(userDatabase.toList())
+
+    override suspend fun updateUserStatus(userId: String, isBlocked: Boolean) {
+        val index = userDatabase.indexOfFirst { it.id == userId }
+        if (index != -1) {
+            userDatabase[index] = userDatabase[index].copy(isBlocked = isBlocked)
+        }
+    }
 }
 
 @Singleton
@@ -147,6 +156,15 @@ class MockSellerRepository @Inject constructor() : SellerRepository {
             sellers.value = currentSellers
         }
     }
+
+    override suspend fun updateSellerStatus(sellerId: String, status: String) {
+        val currentSellers = sellers.value.toMutableList()
+        val index = currentSellers.indexOfFirst { it.id == sellerId }
+        if (index != -1) {
+            currentSellers[index] = currentSellers[index].copy(status = status)
+            sellers.value = currentSellers
+        }
+    }
 }
 
 @Singleton
@@ -154,6 +172,23 @@ class MockCategoryRepository @Inject constructor() : CategoryRepository {
     private val categories = MutableStateFlow<List<Category>>(MockData.categories)
 
     override fun getCategories(): Flow<List<Category>> = categories.asStateFlow()
+
+    override suspend fun addCategory(category: Category) {
+        categories.value = categories.value + category
+    }
+
+    override suspend fun updateCategory(category: Category) {
+        val list = categories.value.toMutableList()
+        val index = list.indexOfFirst { it.id == category.id }
+        if (index != -1) {
+            list[index] = category
+            categories.value = list
+        }
+    }
+
+    override suspend fun deleteCategory(categoryId: String) {
+        categories.value = categories.value.filter { it.id != categoryId }
+    }
 }
 
 @Singleton
@@ -195,6 +230,32 @@ class MockReviewRepository @Inject constructor() : ReviewRepository {
 
     override suspend fun addReview(review: Review) {
         reviews.value = reviews.value + review
+    }
+
+    override fun getReportedReviews(): Flow<List<Review>> {
+        return reviews.map { list -> list.filter { it.isReported } }
+    }
+
+    override suspend fun deleteReview(reviewId: String) {
+        reviews.value = reviews.value.filter { it.id != reviewId }
+    }
+
+    override suspend fun dismissReport(reviewId: String) {
+        val list = reviews.value.toMutableList()
+        val index = list.indexOfFirst { it.id == reviewId }
+        if (index != -1) {
+            list[index] = list[index].copy(isReported = false)
+            reviews.value = list
+        }
+    }
+
+    override suspend fun reportReview(reviewId: String) {
+        val list = reviews.value.toMutableList()
+        val index = list.indexOfFirst { it.id == reviewId }
+        if (index != -1) {
+            list[index] = list[index].copy(isReported = true)
+            reviews.value = list
+        }
     }
 }
 

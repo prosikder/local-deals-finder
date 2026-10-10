@@ -11,7 +11,7 @@ com.localdeals.finder
 ├── domain
 │   ├── model         # Pure Kotlin data classes (User, Deal, Seller, etc.)
 │   ├── repository    # Repository interfaces defining data operations
-│   └── usecase       # Business logic operations
+│   └── usecase       # Business logic operations (e.g., AuthUseCases, AdminUseCases, DealUseCases)
 ├── ui
 │   ├── components    # Reusable Jetpack Compose UI elements
 │   ├── navigation    # Compose Navigation setup (NavGraphs, Routes)

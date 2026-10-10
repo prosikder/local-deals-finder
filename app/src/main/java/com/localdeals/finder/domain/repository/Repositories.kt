@@ -9,6 +9,8 @@ interface AuthRepository {
     suspend fun register(name: String, email: String, pass: String, role: Role): Result<User>
     suspend fun updateProfile(user: User): Result<User>
     suspend fun logout()
+    fun getUsers(): Flow<List<User>>
+    suspend fun updateUserStatus(userId: String, isBlocked: Boolean)
 }
 
 interface DealRepository {
@@ -26,16 +28,24 @@ interface SellerRepository {
     fun getSellers(): Flow<List<Seller>>
     suspend fun getSellerById(id: String): Seller?
     suspend fun updateSeller(seller: Seller)
+    suspend fun updateSellerStatus(sellerId: String, status: String)
 }
 
 interface CategoryRepository {
     fun getCategories(): Flow<List<Category>>
+    suspend fun addCategory(category: Category)
+    suspend fun updateCategory(category: Category)
+    suspend fun deleteCategory(categoryId: String)
 }
 
 interface ReviewRepository {
     fun getReviewsForDeal(dealId: String): Flow<List<Review>>
     fun getReviewsForSeller(sellerId: String): Flow<List<Review>>
     suspend fun addReview(review: Review)
+    fun getReportedReviews(): Flow<List<Review>>
+    suspend fun deleteReview(reviewId: String)
+    suspend fun dismissReport(reviewId: String)
+    suspend fun reportReview(reviewId: String)
 }
 
 interface ChatRepository {

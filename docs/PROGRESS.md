@@ -34,8 +34,8 @@
 | 9 | Seller Store Profile | pending |
 | 10 | Chat & Order Request (local) | done |
 | 11 | Wishlist, Reviews & Notifications | done |
-| 12 | Seller Dashboard & Admin Panel | current |
-| 13 | Local Offline Database (Room) | pending |
+| 12 | Seller Dashboard & Admin Panel | done |
+| 13 | Local Offline Database (Room) | NEXT |
 | 14 | Security, Analytics, Testing & Optimization | pending |
 | 15 | Final Integration & Play Store Release | pending |
 
@@ -61,6 +61,7 @@ Status values: done / current / next / pending
 - **Step 10 (2026-10-09):** Implemented the local-only Chat and Order Request flow. Added `ChatListScreen` and `ChatScreen` with an auto-reply simulator mimicking seller context-aware responses (e.g. "Yes, it's in stock!"). Added `OrderRequestScreen` where users select quantity, add a note, and confirm phone number, hooking it up to the Deals view. Designed `MyOrdersScreen` to show status chips and allow cancellations for pending orders. Implemented an `OrderLifecycle` domain use-case with unit tests handling PENDING -> ACCEPTED -> READY -> COMPLETED state transitions. Added stock decrementing and an order lifecycle simulator background coroutine tied to a debug toggle.
 - **Step 11 (2026-10-09):** Implemented Engagement features. Created `WishlistScreen` with alert toggles, sorting, and empty state. Implemented `ReviewScreen` for users to rate and comment on completed orders, updating the seller's average rating dynamically (tested with `UpdateSellerRatingUseCase`). Built in-app `NotificationsScreen` with swipe-to-delete and mark-all-as-read features. Added `POST_NOTIFICATIONS` runtime permission on Android 13+ in `MainActivity`. Configured a `WorkManager` job (`DealNotificationWorker`) to check for expiring wishlist deals and trigger system notifications. Implemented deep-link intents routing for notifications (order, chat, deal).
 - **Step 12 - Seller (2026-10-10):** Fully implemented the Seller portion of Prompt 12. Implemented `RoleGuardUseCase` with unit tests for protecting routes. Built `SellerDashboardScreen` with a safe `CanvasChart`, displaying active deals, pending orders, and unread messages. Added `AddEditDealScreen` with validation (unit tested) and photo picker. Wired navigation from dashboard to orders and inbox. Built Seller Orders management allowing accept (decreasing stock), reject, ready, and complete via `MyOrdersScreen`. Built `StoreProfileEditScreen` with location pin logic. Implemented `DealAnalyticsUseCase` for per-deal metrics (views, wishlist adds, conversion) unit tested.
+- **Step 12 - Admin (2026-10-10):** Fully implemented the Admin Panel portion of Prompt 12. Enhanced MockRepositories with `updateUserStatus`, `updateSellerStatus`, and review management. Built `AdminDashboardScreen` with horizontal tabs: Overview, Users, Sellers, Deals, Reviews, and Categories. Implemented `DeleteCategoryUseCase` to smoothly fallback deleted category deals to "misc". Wired "Report Review" functionality down into `ReviewItem` for normal users. Created comprehensive admin test coverage in `AdminUseCasesTest.kt`.
 
 ## Known Issues
 
@@ -84,9 +85,10 @@ Status values: done / current / next / pending
 - **Step 10:** Local order lifecycle simulator works. Auto-reply logic triggers in Chat screen correctly. Order Request form captures input and correctly reduces stock when approved.
 - **Step 11:** `UpdateSellerRatingUseCase` unit tests pass. App requests notification permissions gracefully on Android 13+. WorkManager PeriodicWorkRequest successfully scheduled on app launch. Deep link intents properly resolved by `NavGraph`.
 - **Step 12 (Seller):** `DealAnalyticsUseCaseTest` and `DeleteDealUseCaseTest` pass. Navigation routing correctly checks roles. Seller UI flows (Dashboard, Edit Profile, Edit Deal, Orders, Inbox) integrate seamlessly without regressions.
+- **Step 12 (Admin):** `AdminUseCasesTest` passes (specifically `DeleteCategoryUseCase`). The app correctly limits Admin routes to admin users, reporting reviews passes events back to the UI state appropriately, and the Admin Dashboard renders correctly without issues.
 
 ## Resume Note
 
-- **Last completed step:** Step 12 (Seller Part)
-- **Next prompt:** Prompt 12 (Admin Part)
-- **Unfinished work / things the next window must know:** The Seller part of Prompt 12 is fully done. The Admin part remains: user/seller/deal management panels, moderation, and overall analytics. `MockRepositories` must handle these admin actions before Room integration in Prompt 13.
+- **Last completed step:** Step 12 (Admin Part)
+- **Next prompt:** Prompt 13 (Local Offline Database - Room)
+- **Unfinished work / things the next window must know:** Prompt 12 is fully complete. We are now ready to implement the real Room database layer, replacing the MockRepositories in Prompt 13.

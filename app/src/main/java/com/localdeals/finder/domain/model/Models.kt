@@ -66,7 +66,8 @@ data class Review(
     val userName: String,
     val rating: Int,
     val comment: String,
-    val timestampMillis: Long
+    val timestampMillis: Long,
+    val isReported: Boolean = false
 )
 
 data class ChatMessage(
@@ -102,4 +103,12 @@ data class AppNotification(
     val timestampMillis: Long,
     val isRead: Boolean,
     val deepLinkUrl: String = ""
+)
+
+data class AdminStats(
+    val totalUsers: Int,
+    val totalSellers: Int,
+    val totalDeals: Int,
+    val totalOrders: Int,
+    val totalReviews: Int
 )

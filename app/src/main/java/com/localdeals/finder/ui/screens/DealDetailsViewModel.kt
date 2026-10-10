@@ -122,4 +122,10 @@ class DealDetailsViewModel @Inject constructor(
             }
         }
     }
+
+    fun reportReview(reviewId: String) {
+        viewModelScope.launch {
+            reviewRepository.reportReview(reviewId)
+        }
+    }
 }

@@ -36,6 +36,8 @@ class DeleteDealUseCaseTest {
             override suspend fun register(n: String, e: String, p: String, r: Role) = throw NotImplementedError()
             override suspend fun logout() {}
             override suspend fun updateProfile(user: User): Result<User> = Result.success(user)
+            override fun getUsers(): Flow<List<User>> = kotlinx.coroutines.flow.flowOf(emptyList())
+            override suspend fun updateUserStatus(userId: String, isBlocked: Boolean) {}
         }
 
         val useCase = DeleteDealUseCase(mockDealRepo, mockAuthRepo)
@@ -68,6 +70,8 @@ class DeleteDealUseCaseTest {
             override suspend fun register(n: String, e: String, p: String, r: Role) = throw NotImplementedError()
             override suspend fun logout() {}
             override suspend fun updateProfile(user: User): Result<User> = Result.success(user)
+            override fun getUsers(): Flow<List<User>> = kotlinx.coroutines.flow.flowOf(emptyList())
+            override suspend fun updateUserStatus(userId: String, isBlocked: Boolean) {}
         }
 
         val useCase = DeleteDealUseCase(mockDealRepo, mockAuthRepo)
