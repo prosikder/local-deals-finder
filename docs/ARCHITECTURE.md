@@ -24,11 +24,12 @@ com.localdeals.finder
 - **Clean Architecture & MVVM**: UI layer (Compose) -> ViewModel -> UseCases (optional) -> Repository Interface (domain) -> Repository Implementation (data).
 - **UiState Pattern**: ViewModels expose a single `uiState: StateFlow<UiState<T>>` to the UI, representing `Loading`, `Success`, `Empty`, or `Error`.
 - **BaseViewModel**: A generic `BaseViewModel<T>` provides standard methods to emit state. Note: Some ViewModels (e.g. `LocationViewModel`) may extend `androidx.lifecycle.ViewModel` directly because Hilt can sometimes fail to resolve KSP bindings when inheriting from a generic `BaseViewModel` without providing a concrete type.
-- **Navigation**: Controlled by `NavGraph.kt` using Navigation Compose. `LocalDealsApp.kt` holds the Scaffold and Bottom Navigation. Navigation actions happen within screens calling callbacks (e.g. `onNavigateNext`).
+- **Navigation**: Controlled by `NavGraph.kt` using Navigation Compose. `LocalDealsApp.kt` holds the Scaffold and Bottom Navigation. Navigation actions happen within screens calling callbacks (e.g. `onNavigateNext`). Route protection is handled via `RoleGuardUseCase` and logic inside ViewModels, restricting Sellers and Admins to their respective dashboards.
 
 ## Key Decisions
 - **Offline First & Mock Repositories**: In v1, the app relies purely on mock data. All domain interfaces are bound to Mock implementations in `AppModule`.
 - **Zero Dependencies Cost**: Uses purely open-source libraries and no paid APIs (no Firebase, no Google Maps API keys).
+- **Canvas Rendering Safety**: Direct usage of `drawText` on `Canvas` near edges causes buggy native calculations and crashes. A custom `DrawScope.safeDrawText` extension uses `TextMeasurer` manually and is mandated across all map and chart renderings.
 
 ## Dependency List & Versions
 - Kotlin 1.9.23

@@ -16,4 +16,17 @@
 ## Current Feature List
 - Project scaffolded with Gradle Version Catalogs, Hilt, Room, DataStore, WorkManager, Navigation Compose.
 - Domain models and mock repositories implemented.
-- Clean MainActivity and LocalDealsApplication.
+- Clean Architecture layered application with extensive unit testing.
+- Full UI components gallery, Navigation system, and UI Theme.
+- Login, registration, role-based routing, and offline session storage via DataStore.
+- Mock location handling with user fallback.
+- Home screen with hot deals, live countdown timers, categories, and nearby stores.
+- Search with multi-filter (distance, price, discount, rating) and category filters.
+- Deal Details screen showing product statuses, store info, and actions.
+- Offline interactive Custom Map (Canvas-based) with PIN clustering, pinch/zoom.
+- Seller public profiles displaying location, operating hours, deals, and reviews.
+- Local chat message simulator.
+- Full local order lifecycle for users (pending -> accepted -> ready -> complete).
+- Wishlist and user review system.
+- In-app push notifications (via WorkManager) and system notifications.
+- Seller Dashboard: Manage deals (Add, Edit, Delete with validaton and photos), Manage orders (auto-decrementing stock), Store profile edit, and per-deal conversion analytics.

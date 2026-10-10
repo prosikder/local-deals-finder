@@ -25,7 +25,13 @@ class LoginUserUseCase @Inject constructor(private val authRepository: AuthRepos
         if (email.isBlank() || pass.isBlank()) {
             return Result.failure(Exception("Email and password are required"))
         }
-        return authRepository.login(email, pass)
+        val result = authRepository.login(email, pass)
+        val user = result.getOrNull()
+        if (user != null && user.isBlocked) {
+            authRepository.logout()
+            return Result.failure(Exception("Account is blocked"))
+        }
+        return result
     }
 }
 

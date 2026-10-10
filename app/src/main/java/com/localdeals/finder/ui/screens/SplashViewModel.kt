@@ -27,7 +27,10 @@ class SplashViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val user = getCurrentUserUseCase()
-            if (user == null) {
+            if (user == null || user.isBlocked) {
+                if (user?.isBlocked == true) {
+                    // we could theoretically logout here, but getCurrentUserUseCase just fetches it
+                }
                 _state.value = SplashState.GoToLogin
             } else {
                 // In a real app we'd check if location permission is granted. 
