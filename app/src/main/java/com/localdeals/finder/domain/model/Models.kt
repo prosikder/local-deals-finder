@@ -11,7 +11,8 @@ data class User(
     val phone: String = "",
     val role: Role = Role.USER,
     val searchRadiusKm: Int = 5,
-    val language: String = "English"
+    val language: String = "English",
+    val isBlocked: Boolean = false
 )
 
 data class Seller(
@@ -48,6 +49,13 @@ data class Deal(
     val expirationTimeMillis: Long,
     val distanceMeters: Int? = null,
     val imageUrl: String = ""
+)
+
+data class DealStats(
+    val dealId: String,
+    val views: Int = 0,
+    val wishlistAdds: Int = 0,
+    val orders: Int = 0
 )
 
 data class Review(

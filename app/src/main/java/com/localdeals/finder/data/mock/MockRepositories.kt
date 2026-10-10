@@ -31,7 +31,12 @@ class MockAuthRepository @Inject constructor(
 
     override suspend fun getCurrentUser(): User? {
         val userId = dataStoreManager.loggedInUserId.firstOrNull()
-        return userDatabase.find { it.id == userId }
+        val user = userDatabase.find { it.id == userId }
+        if (user != null && user.isBlocked) {
+            dataStoreManager.clearSession()
+            return null
+        }
+        return user
     }
 
     override suspend fun login(email: String, pass: String): Result<User> {
@@ -40,6 +45,9 @@ class MockAuthRepository @Inject constructor(
         if (hash == creds.first) {
             val user = userDatabase.find { it.email == email }
             if (user != null) {
+                if (user.isBlocked) {
+                    return Result.failure(Exception("Account is blocked"))
+                }
                 dataStoreManager.saveSession(user.id)
                 return Result.success(user)
             }
@@ -79,6 +87,10 @@ class MockDealRepository @Inject constructor() : DealRepository {
     private val deals = MutableStateFlow<List<Deal>>(MockData.deals)
 
     override fun getDeals(): Flow<List<Deal>> = deals.asStateFlow()
+
+    override fun getDealsForSeller(sellerId: String): Flow<List<Deal>> {
+        return deals.map { list -> list.filter { it.sellerId == sellerId } }
+    }
 
     override suspend fun getDealById(id: String): Deal? = deals.value.find { it.id == id }
 
@@ -174,6 +186,12 @@ class MockChatRepository @Inject constructor() : ChatRepository {
                 (it.senderId == userId1 && it.receiverId == userId2) ||
                 (it.senderId == userId2 && it.receiverId == userId1)
             }.sortedBy { it.timestampMillis }
+        }
+    }
+
+    override fun getChatsForUser(userId: String): Flow<List<ChatMessage>> {
+        return messages.map { list ->
+            list.filter { it.senderId == userId || it.receiverId == userId }
         }
     }
 

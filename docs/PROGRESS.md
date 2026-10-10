@@ -34,7 +34,7 @@
 | 9 | Seller Store Profile | pending |
 | 10 | Chat & Order Request (local) | done |
 | 11 | Wishlist, Reviews & Notifications | done |
-| 12 | Seller Dashboard & Admin Panel | NEXT |
+| 12 | Seller Dashboard & Admin Panel | current |
 | 13 | Local Offline Database (Room) | pending |
 | 14 | Security, Analytics, Testing & Optimization | pending |
 | 15 | Final Integration & Play Store Release | pending |
@@ -60,6 +60,7 @@ Status values: done / current / next / pending
 - **Step 9 Fixes (2026-10-09):** Added dummy phone numbers (e.g. 01000000001) and realistic fallback descriptions for most seed sellers. Excluded two sellers from having a phone number to test the hidden-Call scenario. Updated `AboutTab` in `SellerStoreScreen` to use a `LazyColumn` with bottom padding so all opening hours rows are accessible. Confirmed ACTION_DIAL intent correctly triggers for the Call row.
 - **Step 10 (2026-10-09):** Implemented the local-only Chat and Order Request flow. Added `ChatListScreen` and `ChatScreen` with an auto-reply simulator mimicking seller context-aware responses (e.g. "Yes, it's in stock!"). Added `OrderRequestScreen` where users select quantity, add a note, and confirm phone number, hooking it up to the Deals view. Designed `MyOrdersScreen` to show status chips and allow cancellations for pending orders. Implemented an `OrderLifecycle` domain use-case with unit tests handling PENDING -> ACCEPTED -> READY -> COMPLETED state transitions. Added stock decrementing and an order lifecycle simulator background coroutine tied to a debug toggle.
 - **Step 11 (2026-10-09):** Implemented Engagement features. Created `WishlistScreen` with alert toggles, sorting, and empty state. Implemented `ReviewScreen` for users to rate and comment on completed orders, updating the seller's average rating dynamically (tested with `UpdateSellerRatingUseCase`). Built in-app `NotificationsScreen` with swipe-to-delete and mark-all-as-read features. Added `POST_NOTIFICATIONS` runtime permission on Android 13+ in `MainActivity`. Configured a `WorkManager` job (`DealNotificationWorker`) to check for expiring wishlist deals and trigger system notifications. Implemented deep-link intents routing for notifications (order, chat, deal).
+- **Step 12 - Seller (2026-10-10):** Audited and partially implemented the Seller portion of Prompt 12. Implemented `RoleGuardUseCase` with unit tests for protecting routes. Built `SellerDashboardScreen` with a safe `CanvasChart`, displaying active deals, pending orders, and unread messages. Added `AddEditDealScreen` with `DealValidationUseCase` and unit tests. Wired navigation from dashboard to orders and inbox. *Missing parts for Seller:* Orders management UI for sellers (accept/reject/ready/complete), Store profile edit with location pin, and per-deal analytics views.
 
 ## Known Issues
 

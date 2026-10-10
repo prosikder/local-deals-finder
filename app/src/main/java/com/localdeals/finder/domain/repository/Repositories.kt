@@ -13,6 +13,7 @@ interface AuthRepository {
 
 interface DealRepository {
     fun getDeals(): Flow<List<Deal>>
+    fun getDealsForSeller(sellerId: String): Flow<List<Deal>>
     suspend fun getDealById(id: String): Deal?
     suspend fun addDeal(deal: Deal)
     suspend fun updateDeal(deal: Deal)
@@ -36,6 +37,7 @@ interface ReviewRepository {
 
 interface ChatRepository {
     fun getMessages(userId1: String, userId2: String): Flow<List<ChatMessage>>
+    fun getChatsForUser(userId: String): Flow<List<ChatMessage>>
     fun getUnreadCount(userId: String): Flow<Int>
     fun isTyping(userId1: String, userId2: String): Flow<Boolean>
     suspend fun sendMessage(message: ChatMessage)

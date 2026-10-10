@@ -32,6 +32,9 @@ sealed class Screen(val route: String) {
     object Notifications : Screen("notifications")
     object Profile : Screen("profile")
     object SellerDashboard : Screen("seller_dashboard")
+    object AddEditDeal : Screen("add_edit_deal?dealId={dealId}") {
+        fun createRoute(dealId: String?) = if (dealId != null) "add_edit_deal?dealId=$dealId" else "add_edit_deal"
+    }
     object AdminPanel : Screen("admin_panel")
 
     object ComponentGallery : Screen("component_gallery")

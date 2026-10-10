@@ -61,7 +61,12 @@ fun NavGraph(
         composable(Screen.Login.route) {
             LoginScreen(
                 onNavigateNext = { role ->
-                    navController.navigate(Screen.LocationPermission.route) {
+                    val nextRoute = when (role) {
+                        com.localdeals.finder.domain.model.Role.ADMIN -> Screen.AdminPanel.route
+                        com.localdeals.finder.domain.model.Role.SELLER -> Screen.SellerDashboard.route
+                        else -> Screen.LocationPermission.route
+                    }
+                    navController.navigate(nextRoute) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
@@ -74,7 +79,12 @@ fun NavGraph(
             RegisterScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateNext = { role ->
-                    navController.navigate(Screen.LocationPermission.route) {
+                    val nextRoute = when (role) {
+                        com.localdeals.finder.domain.model.Role.ADMIN -> Screen.AdminPanel.route
+                        com.localdeals.finder.domain.model.Role.SELLER -> Screen.SellerDashboard.route
+                        else -> Screen.LocationPermission.route
+                    }
+                    navController.navigate(nextRoute) {
                         popUpTo(Screen.Register.route) { inclusive = true }
                     }
                 }
@@ -244,7 +254,35 @@ fun NavGraph(
         }
         
         // Seller Dashboard
-        composable(Screen.SellerDashboard.route) { SellerDashboardScreen() }
+        composable(Screen.SellerDashboard.route) {
+            SellerDashboardScreen(
+                onNavigateToAddDeal = {
+                    navController.navigate(Screen.AddEditDeal.createRoute(null))
+                },
+                onNavigateToOrders = {
+                    navController.navigate(Screen.MyOrders.route)
+                },
+                onNavigateToInbox = {
+                    navController.navigate(Screen.ChatList.route)
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
+        composable(
+            route = Screen.AddEditDeal.route,
+            arguments = listOf(androidx.navigation.navArgument("dealId") {
+                type = androidx.navigation.NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) { backStackEntry ->
+            AddEditDealScreen(
+                dealId = backStackEntry.arguments?.getString("dealId"),
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
 
         // Admin Panel
         composable(Screen.AdminPanel.route) { AdminPanelScreen() }
