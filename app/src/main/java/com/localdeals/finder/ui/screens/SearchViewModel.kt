@@ -3,11 +3,11 @@ package com.localdeals.finder.ui.screens
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.localdeals.finder.data.local.DataStoreManager
 import com.localdeals.finder.domain.model.Category
 import com.localdeals.finder.domain.model.Deal
 import com.localdeals.finder.domain.repository.CategoryRepository
 import com.localdeals.finder.domain.repository.LocationRepository
+import com.localdeals.finder.domain.repository.RecentSearchRepository
 import com.localdeals.finder.domain.usecase.SearchDealsUseCase
 import com.localdeals.finder.domain.usecase.SearchFilters
 import com.localdeals.finder.domain.usecase.SortType
@@ -30,7 +30,7 @@ class SearchViewModel @Inject constructor(
     private val searchDealsUseCase: SearchDealsUseCase,
     private val locationRepository: LocationRepository,
     private val categoryRepository: CategoryRepository,
-    private val dataStoreManager: DataStoreManager,
+    private val recentSearchRepository: RecentSearchRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -41,7 +41,7 @@ class SearchViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<SearchScreenData>>(UiState.Empty)
     val uiState = _uiState.asStateFlow()
 
-    val recentSearches = dataStoreManager.recentSearches.stateIn(
+    val recentSearches = recentSearchRepository.getRecentSearches().map { it.toSet() }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptySet()
@@ -67,7 +67,7 @@ class SearchViewModel @Inject constructor(
     fun onSearch(query: String) {
         if (query.isNotBlank()) {
             viewModelScope.launch {
-                dataStoreManager.addRecentSearch(query)
+                recentSearchRepository.addRecentSearch(query)
             }
         }
         savedStateHandle["query"] = query
@@ -75,7 +75,7 @@ class SearchViewModel @Inject constructor(
 
     fun clearRecentSearches() {
         viewModelScope.launch {
-            dataStoreManager.clearRecentSearches()
+            recentSearchRepository.clearRecentSearches()
         }
     }
 

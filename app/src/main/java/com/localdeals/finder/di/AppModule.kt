@@ -1,6 +1,6 @@
 package com.localdeals.finder.di
 
-import com.localdeals.finder.data.mock.*
+import com.localdeals.finder.data.repository.*
 import com.localdeals.finder.domain.repository.*
 import dagger.Binds
 import dagger.Module
@@ -15,43 +15,43 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(
-        mockAuthRepository: MockAuthRepository
+        roomAuthRepository: RoomAuthRepository
     ): AuthRepository
 
     @Binds
     @Singleton
     abstract fun bindDealRepository(
-        mockDealRepository: MockDealRepository
+        roomDealRepository: RoomDealRepository
     ): DealRepository
 
     @Binds
     @Singleton
     abstract fun bindSellerRepository(
-        mockSellerRepository: MockSellerRepository
+        roomSellerRepository: RoomSellerRepository
     ): SellerRepository
 
     @Binds
     @Singleton
     abstract fun bindCategoryRepository(
-        mockCategoryRepository: MockCategoryRepository
+        roomCategoryRepository: RoomCategoryRepository
     ): CategoryRepository
 
     @Binds
     @Singleton
     abstract fun bindReviewRepository(
-        mockReviewRepository: MockReviewRepository
+        roomReviewRepository: RoomReviewRepository
     ): ReviewRepository
 
     @Binds
     @Singleton
     abstract fun bindChatRepository(
-        mockChatRepository: MockChatRepository
+        roomChatRepository: RoomChatRepository
     ): ChatRepository
 
     @Binds
     @Singleton
     abstract fun bindOrderRepository(
-        mockOrderRepository: MockOrderRepository
+        roomOrderRepository: RoomOrderRepository
     ): OrderRepository
 
     @Binds
@@ -63,18 +63,24 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindWishlistRepository(
-        mockWishlistRepository: MockWishlistRepository
+        roomWishlistRepository: RoomWishlistRepository
     ): WishlistRepository
 
     @Binds
     @Singleton
     abstract fun bindStoreFavoriteRepository(
-        mockStoreFavoriteRepository: MockStoreFavoriteRepository
+        roomStoreFavoriteRepository: RoomStoreFavoriteRepository
     ): StoreFavoriteRepository
 
     @Binds
     @Singleton
     abstract fun bindNotificationRepository(
-        mockNotificationRepository: MockNotificationRepository
+        roomNotificationRepository: RoomNotificationRepository
     ): NotificationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRecentSearchRepository(
+        roomRecentSearchRepository: RoomRecentSearchRepository
+    ): RecentSearchRepository
 }

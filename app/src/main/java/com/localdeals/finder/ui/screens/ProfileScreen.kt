@@ -39,6 +39,7 @@ fun ProfileScreen(
                 user = user, 
                 onSave = { viewModel.updateProfile(it) }, 
                 onLogout = { viewModel.logout(onLogout) },
+                onResetDemoData = { viewModel.resetDemoData() },
                 onNavigateToOrders = onNavigateToOrders
             )
         }
@@ -48,11 +49,41 @@ fun ProfileScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileContent(user: User, onSave: (User) -> Unit, onLogout: () -> Unit, onNavigateToOrders: () -> Unit) {
+fun ProfileContent(
+    user: User,
+    onSave: (User) -> Unit,
+    onLogout: () -> Unit,
+    onResetDemoData: () -> Unit,
+    onNavigateToOrders: () -> Unit
+) {
     var name by remember { mutableStateOf(user.name) }
     var phone by remember { mutableStateOf(user.phone) }
     var radius by remember { mutableStateOf(user.searchRadiusKm) }
     var language by remember { mutableStateOf(user.language) }
+    var showResetDialog by remember { mutableStateOf(false) }
+
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            title = { Text("Reset Demo Data") },
+            text = { Text("Are you sure you want to clear all data and restore demo defaults? This will restore original deals, categories, and sellers.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showResetDialog = false
+                        onResetDemoData()
+                    }
+                ) {
+                    Text("Reset", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         // Avatar
@@ -101,6 +132,16 @@ fun ProfileContent(user: User, onSave: (User) -> Unit, onLogout: () -> Unit, onN
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("My Orders")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = { showResetDialog = true },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Reset Demo Data / Clear All")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

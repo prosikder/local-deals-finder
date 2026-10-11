@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.localdeals.finder.domain.model.User
 import com.localdeals.finder.domain.usecase.GetCurrentUserUseCase
 import com.localdeals.finder.domain.usecase.LogoutUseCase
+import com.localdeals.finder.domain.usecase.ResetDemoDataUseCase
 import com.localdeals.finder.domain.usecase.UpdateProfileUseCase
 import com.localdeals.finder.ui.BaseViewModel
 import com.localdeals.finder.ui.UiState
@@ -16,11 +17,21 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val resetDemoDataUseCase: ResetDemoDataUseCase
 ) : BaseViewModel<User>() {
 
     init {
         loadProfile()
+    }
+
+    fun resetDemoData(onComplete: () -> Unit = {}) {
+        emitLoading()
+        viewModelScope.launch {
+            resetDemoDataUseCase()
+            loadProfile()
+            onComplete()
+        }
     }
 
     private fun loadProfile() {

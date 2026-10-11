@@ -29,5 +29,6 @@
 - Full local order lifecycle for users (pending -> accepted -> ready -> complete).
 - Wishlist and user review system.
 - In-app push notifications (via WorkManager) and system notifications.
-- Seller Dashboard: Manage deals (Add, Edit, Delete with validaton and photos), Manage orders (auto-decrementing stock), Store profile edit, and per-deal conversion analytics.
+- Seller Dashboard: Manage deals (Add, Edit, Delete with validation and photos), Manage orders (auto-decrementing stock), Store profile edit, and per-deal conversion analytics.
 - Admin Panel: Comprehensive dashboard for managing users (block/unblock), sellers (suspend/approve), deals, review reports, categories, and platform analytics.
+- Room Local Database: Complete offline persistence with 12 Room entities, 11 DAOs, background first-launch seeder, bounding-box + Haversine distance search, atomic transaction pipelines, and Profile "Reset Demo Data / Clear All" option.

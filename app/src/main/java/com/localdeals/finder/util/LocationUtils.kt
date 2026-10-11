@@ -20,6 +20,13 @@ object LocationUtils {
     }
 
     /**
+     * Calculates distance in meters using Haversine formula.
+     */
+    fun haversineDistanceMeters(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        return haversineDistance(lat1, lon1, lat2, lon2) * 1000.0
+    }
+
+    /**
      * Calculates the initial bearing from point 1 to point 2.
      * @return Bearing in degrees from north.
      */

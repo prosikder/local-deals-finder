@@ -102,3 +102,9 @@ interface StoreFavoriteRepository {
     suspend fun removeFavorite(sellerId: String)
     fun isFavorite(sellerId: String): Flow<Boolean>
 }
+
+interface RecentSearchRepository {
+    fun getRecentSearches(): Flow<List<String>>
+    suspend fun addRecentSearch(query: String)
+    suspend fun clearRecentSearches()
+}
