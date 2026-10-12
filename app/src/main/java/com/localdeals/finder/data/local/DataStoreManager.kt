@@ -23,6 +23,7 @@ class DataStoreManager @Inject constructor(
         val MANUAL_LOCATION = stringPreferencesKey("manual_location")
         val RECENT_SEARCHES = stringSetPreferencesKey("recent_searches")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val FCM_TOKEN = stringPreferencesKey("fcm_token")
     }
 
     val isOnboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -32,6 +33,16 @@ class DataStoreManager @Inject constructor(
     suspend fun setOnboardingCompleted(completed: Boolean = true) {
         context.dataStore.edit { preferences ->
             preferences[ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    val fcmToken: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[FCM_TOKEN]
+    }
+
+    suspend fun saveFcmToken(token: String) {
+        context.dataStore.edit { preferences ->
+            preferences[FCM_TOKEN] = token
         }
     }
 

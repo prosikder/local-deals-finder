@@ -33,7 +33,8 @@ data class AddEditDealState(
 class AddEditDealViewModel @Inject constructor(
     private val dealRepository: DealRepository,
     private val categoryRepository: CategoryRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val firebaseSyncManager: com.localdeals.finder.data.cloud.FirebaseSyncManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddEditDealState())
@@ -137,6 +138,22 @@ class AddEditDealViewModel @Inject constructor(
             } else {
                 dealRepository.updateDeal(deal)
             }
+
+            firebaseSyncManager.publishDeal(
+                com.localdeals.finder.data.local.entity.DealEntity(
+                    id = deal.id,
+                    sellerId = deal.sellerId,
+                    title = deal.title,
+                    description = deal.description,
+                    originalPrice = deal.originalPrice,
+                    discountedPrice = deal.discountedPrice,
+                    discountPercentage = deal.discountPercentage,
+                    stock = deal.stock,
+                    categoryId = deal.categoryId,
+                    expirationTimeMillis = deal.expirationTimeMillis,
+                    imageUrl = deal.imageUrl
+                )
+            )
 
             _state.value = _state.value.copy(isLoading = false, isSuccess = true)
         }

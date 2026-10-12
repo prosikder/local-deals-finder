@@ -6,9 +6,16 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class LocalDealsApplication : Application() {
+
+    @javax.inject.Inject
+    lateinit var firebaseSyncManager: com.localdeals.finder.data.cloud.FirebaseSyncManager
+
     override fun onCreate() {
         super.onCreate()
         val isDebug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
@@ -28,6 +35,15 @@ class LocalDealsApplication : Application() {
         }
         
         scheduleNotificationWorker()
+
+        // Background Cloud Sync with Firebase Firestore
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            try {
+                firebaseSyncManager.syncDeals()
+            } catch (e: Exception) {
+                // Gracefully ignore sync errors if offline
+            }
+        }
     }
     
     private fun scheduleNotificationWorker() {

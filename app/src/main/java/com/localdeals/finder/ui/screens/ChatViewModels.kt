@@ -70,7 +70,8 @@ data class ChatUiState(
 class ChatViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val chatRepository: ChatRepository,
-    private val sellerRepository: SellerRepository
+    private val sellerRepository: SellerRepository,
+    private val firebaseSyncManager: com.localdeals.finder.data.cloud.FirebaseSyncManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChatUiState(isLoading = true))
@@ -83,6 +84,9 @@ class ChatViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(isLoading = false, error = "Not logged in")
                 return@launch
             }
+
+            // Start Firebase real-time chat listener
+            firebaseSyncManager.startListeningToChat(user.id, otherUserId)
 
             // Fetch other user name (might be a seller)
             // If it starts with user_s, it might be a seller's userId
@@ -126,6 +130,23 @@ class ChatViewModel @Inject constructor(
                 timestampMillis = System.currentTimeMillis()
             )
             chatRepository.sendMessage(msg)
+
+            // Sync to Firestore
+            firebaseSyncManager.sendChatMessage(
+                com.localdeals.finder.data.local.entity.ChatMessageEntity(
+                    id = msg.id,
+                    senderId = msg.senderId,
+                    receiverId = msg.receiverId,
+                    content = msg.content,
+                    timestampMillis = msg.timestampMillis,
+                    isRead = false
+                )
+            )
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        firebaseSyncManager.stopListeners()
     }
 }

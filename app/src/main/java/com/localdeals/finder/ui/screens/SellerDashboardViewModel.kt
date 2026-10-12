@@ -30,7 +30,8 @@ class SellerDashboardViewModel @Inject constructor(
     private val orderRepository: OrderRepository,
     private val chatRepository: ChatRepository,
     private val dealAnalyticsUseCase: com.localdeals.finder.domain.usecase.DealAnalyticsUseCase,
-    private val deleteDealUseCase: com.localdeals.finder.domain.usecase.DeleteDealUseCase
+    private val deleteDealUseCase: com.localdeals.finder.domain.usecase.DeleteDealUseCase,
+    private val firebaseSyncManager: com.localdeals.finder.data.cloud.FirebaseSyncManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SellerDashboardState())
@@ -51,6 +52,7 @@ class SellerDashboardViewModel @Inject constructor(
                 }
                 
                 val sellerId = user.id
+                firebaseSyncManager.startListeningToSellerOrders(sellerId)
                 
                 val deals = dealRepository.getDealsForSeller(sellerId).firstOrNull() ?: emptyList()
                 val activeDealsCount = deals.count { it.stock > 0 }
@@ -104,6 +106,7 @@ class SellerDashboardViewModel @Inject constructor(
         viewModelScope.launch {
             val result = deleteDealUseCase.execute(dealId)
             if (result.isSuccess) {
+                firebaseSyncManager.deleteDeal(dealId)
                 loadDashboardData()
             } else {
                 _state.value = _state.value.copy(error = result.exceptionOrNull()?.message)

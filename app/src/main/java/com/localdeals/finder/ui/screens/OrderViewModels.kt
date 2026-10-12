@@ -28,7 +28,8 @@ class OrderRequestViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val dealRepository: DealRepository,
     private val orderRepository: OrderRepository,
-    private val analyticsTracker: com.localdeals.finder.domain.analytics.AnalyticsTracker
+    private val analyticsTracker: com.localdeals.finder.domain.analytics.AnalyticsTracker,
+    private val firebaseSyncManager: com.localdeals.finder.data.cloud.FirebaseSyncManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OrderRequestUiState(isLoading = true))
     val uiState: StateFlow<OrderRequestUiState> = _uiState.asStateFlow()
@@ -94,6 +95,19 @@ class OrderRequestViewModel @Inject constructor(
                 status = OrderStatus.PENDING
             )
             orderRepository.createOrder(order)
+            firebaseSyncManager.uploadOrder(
+                com.localdeals.finder.data.local.entity.OrderRequestEntity(
+                    id = orderId,
+                    dealId = deal.id,
+                    buyerId = user.id,
+                    sellerId = deal.sellerId,
+                    quantity = state.quantity,
+                    note = cleanNote,
+                    phoneConfirmation = cleanPhone,
+                    status = OrderStatus.PENDING,
+                    timestampMillis = System.currentTimeMillis()
+                )
+            )
             analyticsTracker.logEvent(
                 "order_placed",
                 mapOf("orderId" to orderId, "dealId" to deal.id, "sellerId" to deal.sellerId)

@@ -15,6 +15,9 @@ interface DealDao {
     @Query("SELECT * FROM deals")
     fun getAllDeals(): Flow<List<DealEntity>>
 
+    @Query("SELECT * FROM deals")
+    suspend fun getAllDealsSync(): List<DealEntity>
+
     @Query("""
         SELECT DISTINCT deals.* FROM deals
         LEFT JOIN sellers ON deals.sellerId = sellers.id OR deals.sellerId = sellers.userId

@@ -96,7 +96,8 @@ In v2, transitions to cloud backends will **NOT** require refactoring any ViewMo
 
 | Milestone | Version | Core Deliverables | Architecture Impact |
 | :--- | :--- | :--- | :--- |
-| **v1.0** *(Current)* | `1.0.0` | 100% offline, Room DB, local simulated chat/orders, encrypted session, R8 minified AAB. | Established repository interfaces and Clean Architecture. |
-| **v1.1** | `1.1.0` | Dhaka neighborhood crowd-sourcing, export/import backup file, multi-image support. | DAO additions, Room schema migration v1 -> v2. |
-| **v2.0** | `2.0.0` | Cloud sync (Firebase/Supabase), Live chat with FCM push notifications. | Swap in `SyncDealRepository` and `RemoteChatRepository`. |
-| **v2.1** | `2.1.0` | Google Play Billing merchant subscriptions, promoted deals engine, advanced analytics. | Add `SubscriptionRepository` and Billing Client wrapper. |
+| **v1.0** | `1.0.0` | 100% offline, Room DB, local simulated chat/orders, encrypted session, R8 minified AAB. | Established repository interfaces and Clean Architecture. |
+| **v1.1** *(Completed)* | `1.1.0` | Hybrid Offline-First Cloud Sync: Firebase Firestore deals sync, real-time orders, real-time chat sync, and FCM Push Notifications under $0 free Spark plan. | Room single-source-of-truth + `FirebaseSyncManager` + `AppFirebaseMessagingService`. |
+| **v1.2** | `1.2.0` | Dhaka neighborhood crowd-sourcing, export/import backup file, multi-image deal gallery. | DAO additions, Room schema migration v1 -> v2. |
+| **v2.0** | `2.0.0` | Google Play Billing merchant subscriptions, promoted deals engine, advanced analytics. | Add `SubscriptionRepository` and Billing Client wrapper. |
+
