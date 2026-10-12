@@ -60,3 +60,4 @@
 - [Google Play Store Release Pack](docs/PLAY_STORE.md)
 - [v2 Technical Roadmap](docs/ROADMAP.md)
 - [Final Manual Regression Checklist](docs/REGRESSION.md)
+- [সম্পূর্ণ টেস্টিং নির্দেশিকা (বাংলায়)](docs/TESTING_BANGLA.md)
