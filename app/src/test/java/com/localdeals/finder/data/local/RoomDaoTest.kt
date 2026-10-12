@@ -31,6 +31,7 @@ class RoomDaoTest {
     private lateinit var wishlistDao: WishlistDao
     private lateinit var chatDao: ChatDao
     private lateinit var recentSearchDao: RecentSearchDao
+    private lateinit var analyticsDao: AnalyticsDao
 
     @Before
     fun createDb() {
@@ -48,6 +49,7 @@ class RoomDaoTest {
         wishlistDao = db.wishlistDao()
         chatDao = db.chatDao()
         recentSearchDao = db.recentSearchDao()
+        analyticsDao = db.analyticsDao()
     }
 
     @After
@@ -340,5 +342,34 @@ class RoomDaoTest {
 
         wishlistDao.deleteWishlist("user_w", "d_w")
         assertFalse(wishlistDao.isWishlisted("user_w", "d_w").first())
+    }
+
+    @Test
+    fun testAnalyticsDaoOperations() = runBlocking {
+        analyticsDao.insertEvent(
+            AnalyticsEventEntity(name = "deal_view", params = "dealId=d1;sellerId=s1")
+        )
+        analyticsDao.insertEvent(
+            AnalyticsEventEntity(name = "deal_view", params = "dealId=d1;sellerId=s1")
+        )
+        analyticsDao.insertEvent(
+            AnalyticsEventEntity(name = "order_placed", params = "dealId=d1;orderId=o1")
+        )
+
+        val totalViews = analyticsDao.getEventCount("deal_view").first()
+        assertEquals(2, totalViews)
+
+        val totalOrders = analyticsDao.getEventCount("order_placed").first()
+        assertEquals(1, totalOrders)
+
+        val d1Views = analyticsDao.getEventCountWithParam("deal_view", "dealId=d1").first()
+        assertEquals(2, d1Views)
+
+        val allEvents = analyticsDao.getAllEvents().first()
+        assertEquals(3, allEvents.size)
+
+        analyticsDao.clearAll()
+        val emptyEvents = analyticsDao.getAllEvents().first()
+        assertTrue(emptyEvents.isEmpty())
     }
 }

@@ -130,7 +130,7 @@ fun MapScreen(
                         colors = FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.surface)
                     )
                 }
-                items(uiState.categories) { category ->
+                items(uiState.categories, key = { it.id }) { category ->
                     FilterChip(
                         selected = uiState.selectedCategoryId == category.id,
                         onClick = { viewModel.setCategoryFilter(category.id) },

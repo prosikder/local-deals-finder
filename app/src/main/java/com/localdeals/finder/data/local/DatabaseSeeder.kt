@@ -43,16 +43,20 @@ class DatabaseSeeder @Inject constructor(
             database.recentSearchDao().clearRecentSearches()
 
             // 2. Seed Users
-            val adminSalt = HashUtil.generateSalt()
-            val adminHash = HashUtil.hashPassword("Admin@123", adminSalt)
-            val adminUser = UserEntity(
-                id = "admin_id",
-                name = "Admin",
-                email = "admin@local.app",
-                passwordHash = adminHash,
-                passwordSalt = adminSalt,
-                role = Role.ADMIN
-            )
+            val usersToSeed = mutableListOf<UserEntity>()
+            if (com.localdeals.finder.BuildConfig.DEBUG) {
+                val adminSalt = HashUtil.generateSalt()
+                val adminHash = HashUtil.hashPassword("Admin@123", adminSalt)
+                val adminUser = UserEntity(
+                    id = "admin_id",
+                    name = "Admin",
+                    email = "admin@local.app",
+                    passwordHash = adminHash,
+                    passwordSalt = adminSalt,
+                    role = Role.ADMIN
+                )
+                usersToSeed.add(adminUser)
+            }
 
             val user1Salt = HashUtil.generateSalt()
             val user1Hash = HashUtil.hashPassword("User@123", user1Salt)
@@ -65,6 +69,7 @@ class DatabaseSeeder @Inject constructor(
                 phone = "01700000001",
                 role = Role.USER
             )
+            usersToSeed.add(user1)
 
             val user2Salt = HashUtil.generateSalt()
             val user2Hash = HashUtil.hashPassword("User@123", user2Salt)
@@ -77,6 +82,7 @@ class DatabaseSeeder @Inject constructor(
                 phone = "01700000002",
                 role = Role.USER
             )
+            usersToSeed.add(user2)
 
             // Seed seller users for each seller
             val sellerUsers = MockData.sellers.map { seller ->
@@ -92,8 +98,9 @@ class DatabaseSeeder @Inject constructor(
                     role = Role.SELLER
                 )
             }
+            usersToSeed.addAll(sellerUsers)
 
-            database.userDao().insertUsers(listOf(adminUser, user1, user2) + sellerUsers)
+            database.userDao().insertUsers(usersToSeed)
 
             // 3. Seed Categories
             val categories = MockData.categories.map { it.toEntity() }

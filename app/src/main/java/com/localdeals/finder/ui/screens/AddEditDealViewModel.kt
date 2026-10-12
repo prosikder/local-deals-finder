@@ -115,11 +115,14 @@ class AddEditDealViewModel @Inject constructor(
 
             val dealPrice = priceVal * (1 - (discountVal / 100.0))
 
+            val cleanTitle = com.localdeals.finder.util.SanitizationUtil.sanitizeText(_state.value.title, 100)
+            val cleanDesc = com.localdeals.finder.util.SanitizationUtil.sanitizeText(_state.value.description, 1000)
+
             val deal = Deal(
                 id = _state.value.dealId ?: UUID.randomUUID().toString(),
                 sellerId = user.id,
-                title = _state.value.title,
-                description = _state.value.description,
+                title = cleanTitle,
+                description = cleanDesc,
                 originalPrice = priceVal,
                 discountedPrice = dealPrice,
                 discountPercentage = discountVal,

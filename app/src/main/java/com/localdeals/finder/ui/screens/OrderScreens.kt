@@ -171,7 +171,7 @@ fun MyOrdersScreen(
                 Text("No orders found.", modifier = Modifier.align(Alignment.Center))
             } else {
                 LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    items(uiState.orders) { orderData ->
+                    items(uiState.orders, key = { it.order.id }) { orderData ->
                         OrderCard(
                             orderData = orderData,
                             currentUserId = uiState.currentUserId,

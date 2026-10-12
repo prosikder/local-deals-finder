@@ -31,7 +31,8 @@ class SearchViewModel @Inject constructor(
     private val locationRepository: LocationRepository,
     private val categoryRepository: CategoryRepository,
     private val recentSearchRepository: RecentSearchRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val analyticsTracker: com.localdeals.finder.domain.analytics.AnalyticsTracker
 ) : ViewModel() {
 
     // Survives rotation natively in ViewModel. For process death, we store query in SavedStateHandle.
@@ -61,16 +62,19 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onQueryChange(newQuery: String) {
-        savedStateHandle["query"] = newQuery
+        val sanitized = com.localdeals.finder.util.SanitizationUtil.sanitizeQuery(newQuery)
+        savedStateHandle["query"] = sanitized
     }
 
     fun onSearch(query: String) {
-        if (query.isNotBlank()) {
+        val sanitized = com.localdeals.finder.util.SanitizationUtil.sanitizeQuery(query)
+        if (sanitized.isNotBlank()) {
             viewModelScope.launch {
-                recentSearchRepository.addRecentSearch(query)
+                recentSearchRepository.addRecentSearch(sanitized)
+                analyticsTracker.logEvent("search_query", mapOf("query" to sanitized))
             }
         }
-        savedStateHandle["query"] = query
+        savedStateHandle["query"] = sanitized
     }
 
     fun clearRecentSearches() {

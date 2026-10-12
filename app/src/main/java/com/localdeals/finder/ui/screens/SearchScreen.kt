@@ -97,7 +97,7 @@ fun SearchScreen(
                                 }
                             }
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                items(recentSearches.toList()) { search ->
+                                items(recentSearches.toList(), key = { it }) { search ->
                                     FilterChip(
                                         selected = false,
                                         onClick = { 
@@ -258,7 +258,7 @@ fun FiltersBottomSheet(
                         label = { Text("All") }
                     )
                 }
-                items(categories) { category ->
+                items(categories, key = { it.id }) { category ->
                     FilterChip(
                         selected = currentFilters.categoryId == category.id,
                         onClick = { currentFilters = currentFilters.copy(categoryId = category.id) },

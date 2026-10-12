@@ -223,7 +223,7 @@ fun DealsTab(uiState: SellerStoreUiState, onNavigateToDeal: (String) -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(uiState.deals) { deal ->
+            items(uiState.deals, key = { it.id }) { deal ->
                 DealCard(deal = deal, onClick = { onNavigateToDeal(deal.id) })
             }
         }
@@ -257,7 +257,7 @@ fun ReviewsTab(uiState: SellerStoreUiState, onReportReview: (String) -> Unit) {
                 HorizontalDivider()
                 Spacer(Modifier.height(16.dp))
             }
-            items(uiState.reviews) { review ->
+            items(uiState.reviews, key = { it.id }) { review ->
                 ReviewItem(review, { onReportReview(review.id) })
             }
         }

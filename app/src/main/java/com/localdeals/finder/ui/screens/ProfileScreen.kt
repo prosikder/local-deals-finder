@@ -85,7 +85,13 @@ fun ProfileContent(
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .widthIn(max = 600.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         // Avatar
         Box(
             modifier = Modifier
@@ -101,35 +107,74 @@ fun ProfileContent(
         }
         Spacer(modifier = Modifier.height(24.dp))
 
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("Phone") }, modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = phone,
+            onValueChange = { phone = it },
+            label = { Text("Phone") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Search Radius Dropdown
-        Text("Search Radius (km)")
+        Text("Search Radius", style = MaterialTheme.typography.titleSmall)
+        Spacer(modifier = Modifier.height(4.dp))
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
             listOf(1, 3, 5, 10).forEach { km ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.defaultMinSize(minHeight = 48.dp)
+                ) {
                     RadioButton(selected = radius == km, onClick = { radius = km })
                     Text("$km km")
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(value = language, onValueChange = { language = it }, label = { Text("Language") }, modifier = Modifier.fillMaxWidth())
+        // Language Selector
+        Text("Language / ভাষা", style = MaterialTheme.typography.titleSmall)
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            listOf("English" to "English", "Bengali" to "বাংলা").forEach { (code, label) ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.defaultMinSize(minHeight = 48.dp)
+                ) {
+                    RadioButton(
+                        selected = language.equals(code, ignoreCase = true) || (code == "Bengali" && language.contains("বাংলা")),
+                        onClick = { language = code }
+                    )
+                    Text(label)
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(24.dp))
 
-        PrimaryButton(text = "Save Profile", onClick = {
-            onSave(user.copy(name = name, phone = phone, searchRadiusKm = radius, language = language))
-        })
+        PrimaryButton(
+            text = "Save Profile",
+            onClick = {
+                val cleanName = com.localdeals.finder.util.SanitizationUtil.sanitizeText(name, 50)
+                val cleanPhone = com.localdeals.finder.util.SanitizationUtil.sanitizePhone(phone)
+                onSave(user.copy(name = cleanName, phone = cleanPhone, searchRadiusKm = radius, language = language))
+            },
+            modifier = Modifier.defaultMinSize(minHeight = 48.dp)
+        )
         
         Spacer(modifier = Modifier.height(16.dp))
         
         OutlinedButton(
             onClick = onNavigateToOrders,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
         ) {
             Text("My Orders")
         }
@@ -139,7 +184,7 @@ fun ProfileContent(
         OutlinedButton(
             onClick = { showResetDialog = true },
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
         ) {
             Text("Reset Demo Data / Clear All")
         }
@@ -149,7 +194,7 @@ fun ProfileContent(
         Button(
             onClick = onLogout,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
         ) {
             Text("Logout")
         }

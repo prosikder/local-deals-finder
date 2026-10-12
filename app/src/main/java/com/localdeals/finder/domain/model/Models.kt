@@ -110,5 +110,7 @@ data class AdminStats(
     val totalSellers: Int,
     val totalDeals: Int,
     val totalOrders: Int,
-    val totalReviews: Int
+    val totalReviews: Int,
+    val totalViews: Int = 0,
+    val totalSearches: Int = 0
 )

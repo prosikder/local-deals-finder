@@ -11,7 +11,8 @@ import javax.inject.Inject
 class DealAnalyticsUseCase @Inject constructor(
     private val dealRepository: DealRepository,
     private val orderRepository: OrderRepository,
-    private val wishlistRepository: WishlistRepository
+    private val wishlistRepository: WishlistRepository,
+    private val analyticsTracker: com.localdeals.finder.domain.analytics.AnalyticsTracker
 ) {
     fun getAnalytics(dealId: String): Flow<DealStats> {
         return combine(
@@ -28,5 +29,6 @@ class DealAnalyticsUseCase @Inject constructor(
 
     suspend fun recordView(dealId: String) {
         dealRepository.incrementDealView(dealId)
+        analyticsTracker.logEvent("deal_view", mapOf("dealId" to dealId))
     }
 }

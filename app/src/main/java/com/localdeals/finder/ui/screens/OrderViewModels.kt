@@ -27,7 +27,8 @@ data class OrderRequestUiState(
 class OrderRequestViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val dealRepository: DealRepository,
-    private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository,
+    private val analyticsTracker: com.localdeals.finder.domain.analytics.AnalyticsTracker
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OrderRequestUiState(isLoading = true))
     val uiState: StateFlow<OrderRequestUiState> = _uiState.asStateFlow()
@@ -71,26 +72,32 @@ class OrderRequestViewModel @Inject constructor(
             _uiState.value = state.copy(error = "Insufficient stock")
             return
         }
-        if (state.phoneConfirmation.isBlank()) {
+        val cleanPhone = com.localdeals.finder.util.SanitizationUtil.sanitizePhone(state.phoneConfirmation)
+        if (cleanPhone.isBlank()) {
             _uiState.value = state.copy(error = "Phone number is required")
             return
         }
+        val cleanNote = com.localdeals.finder.util.SanitizationUtil.sanitizeText(state.note, 500)
 
         viewModelScope.launch {
             _uiState.value = state.copy(isLoading = true, error = null)
             val user = authRepository.getCurrentUser() ?: return@launch
-            
+            val orderId = UUID.randomUUID().toString()
             val order = OrderRequest(
-                id = UUID.randomUUID().toString(),
+                id = orderId,
                 dealId = deal.id,
                 buyerId = user.id,
                 sellerId = deal.sellerId,
                 quantity = state.quantity,
-                note = state.note,
-                phoneConfirmation = state.phoneConfirmation,
+                note = cleanNote,
+                phoneConfirmation = cleanPhone,
                 status = OrderStatus.PENDING
             )
             orderRepository.createOrder(order)
+            analyticsTracker.logEvent(
+                "order_placed",
+                mapOf("orderId" to orderId, "dealId" to deal.id, "sellerId" to deal.sellerId)
+            )
             _uiState.value = state.copy(isLoading = false, success = true)
         }
     }

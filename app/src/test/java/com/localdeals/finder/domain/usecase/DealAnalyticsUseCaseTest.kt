@@ -46,7 +46,16 @@ class DealAnalyticsUseCaseTest {
             override fun getWishlistCount(dealId: String) = flowOf(3)
         }
 
-        val useCase = DealAnalyticsUseCase(mockDealRepo, mockOrderRepo, mockWishlistRepo)
+        val fakeAnalytics = object : com.localdeals.finder.domain.analytics.AnalyticsTracker {
+            override suspend fun logEvent(name: String, params: Map<String, String>) {}
+            override fun getEvents() = flowOf(emptyList<com.localdeals.finder.domain.analytics.LocalAnalyticsEvent>())
+            override fun getEventsByName(name: String) = flowOf(emptyList<com.localdeals.finder.domain.analytics.LocalAnalyticsEvent>())
+            override fun getEventCount(name: String) = flowOf(0)
+            override fun getEventCountForEntity(name: String, entityId: String) = flowOf(0)
+            override suspend fun clearEvents() {}
+        }
+
+        val useCase = DealAnalyticsUseCase(mockDealRepo, mockOrderRepo, mockWishlistRepo, fakeAnalytics)
         val stats = useCase.getAnalytics("1").first()
 
         assertEquals(10, stats.views)

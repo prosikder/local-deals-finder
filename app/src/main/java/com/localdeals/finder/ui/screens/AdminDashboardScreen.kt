@@ -84,6 +84,7 @@ fun AdminOverviewTab(stats: AdminStats?) {
         AdminStatCard("Total Sellers", stats.totalSellers)
         AdminStatCard("Total Deals", stats.totalDeals)
         AdminStatCard("Total Orders", stats.totalOrders)
+        AdminStatCard("Total Views (Tracked)", stats.totalViews)
         AdminStatCard("Total Reviews", stats.totalReviews)
     }
 }
@@ -105,7 +106,7 @@ fun AdminStatCard(title: String, value: Int) {
 @Composable
 fun AdminUsersTab(users: List<User>, onToggleBlock: (String, Boolean) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(users) { user ->
+        items(users, key = { it.id }) { user ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -130,7 +131,7 @@ fun AdminUsersTab(users: List<User>, onToggleBlock: (String, Boolean) -> Unit) {
 @Composable
 fun AdminSellersTab(sellers: List<Seller>, onToggleSuspend: (String, Boolean) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(sellers) { seller ->
+        items(sellers, key = { it.id }) { seller ->
             val isSuspended = seller.status == "SUSPENDED"
             Card(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -155,7 +156,7 @@ fun AdminSellersTab(sellers: List<Seller>, onToggleSuspend: (String, Boolean) ->
 @Composable
 fun AdminDealsTab(deals: List<Deal>, onRemove: (String) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(deals) { deal ->
+        items(deals, key = { it.id }) { deal ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -183,7 +184,7 @@ fun AdminReviewsTab(reviews: List<Review>, onDismiss: (String) -> Unit, onDelete
         }
     } else {
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(reviews) { review ->
+            items(reviews, key = { it.id }) { review ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(review.userName, style = MaterialTheme.typography.titleMedium)
@@ -241,7 +242,7 @@ fun AdminCategoriesTab(
         }
     ) { padding ->
         LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.padding(padding), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(categories) { category ->
+            items(categories, key = { it.id }) { category ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier.padding(16.dp).fillMaxWidth(),

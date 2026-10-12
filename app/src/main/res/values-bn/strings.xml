@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">লোকাল ডিলস ফাইন্ডার</string>
+    <string name="nav_home">হোম</string>
+    <string name="nav_map">ম্যাপ</string>
+    <string name="nav_search">অনুসন্ধান</string>
+    <string name="nav_wishlist">প্রিয় তালিকা</string>
+    <string name="nav_profile">প্রোফাইল</string>
+    <string name="login_title">স্বাগতম</string>
+    <string name="login_button">লগ ইন</string>
+    <string name="register_button">নিবন্ধন</string>
+    <string name="logout_button">লগ আউট</string>
+    <string name="search_hint">ডিল, দোকান বা ক্যাটাগরি খুঁজুন...</string>
+    <string name="filter_all">সব</string>
+    <string name="empty_deals">কোনো ডিল পাওয়া যায়নি</string>
+    <string name="error_unauthorized">অননুমোদিত অ্যাক্সেস</string>
+    <string name="language_selector">ভাষা</string>
+    <string name="language_en">English</string>
+    <string name="language_bn">বাংলা (Bengali)</string>
+    <string name="admin_dashboard">অ্যাডমিন ড্যাশবোর্ড</string>
+    <string name="seller_dashboard">সেলার ড্যাশবোর্ড</string>
+    <string name="order_history">আমার অর্ডারসমূহ</string>
+    <string name="touch_target_desc">ইন্টারঅ্যাক্টিভ অ্যাকশন বাটন</string>
+</resources>

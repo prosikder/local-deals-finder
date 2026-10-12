@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Local Deals Finder</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_wishlist">Wishlist</string>
+    <string name="nav_profile">Profile</string>
+    <string name="login_title">Welcome Back</string>
+    <string name="login_button">Log In</string>
+    <string name="register_button">Register</string>
+    <string name="logout_button">Log Out</string>
+    <string name="search_hint">Search deals, stores, categories...</string>
+    <string name="filter_all">All</string>
+    <string name="empty_deals">No deals found</string>
+    <string name="error_unauthorized">Unauthorized access</string>
+    <string name="language_selector">Language</string>
+    <string name="language_en">English</string>
+    <string name="language_bn">বাংলা (Bengali)</string>
+    <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="seller_dashboard">Seller Dashboard</string>
+    <string name="order_history">My Orders</string>
+    <string name="touch_target_desc">Interactive action button</string>
 </resources>

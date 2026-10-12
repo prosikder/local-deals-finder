@@ -24,12 +24,15 @@ class DataStoreManager @Inject constructor(
     }
 
     val loggedInUserId: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[LOGGED_IN_USER_ID]
+        preferences[LOGGED_IN_USER_ID]?.let { encryptedId ->
+            com.localdeals.finder.util.CryptoManager.decrypt(encryptedId).ifEmpty { null }
+        }
     }
 
     suspend fun saveSession(userId: String) {
+        val encrypted = com.localdeals.finder.util.CryptoManager.encrypt(userId)
         context.dataStore.edit { preferences ->
-            preferences[LOGGED_IN_USER_ID] = userId
+            preferences[LOGGED_IN_USER_ID] = encrypted
         }
     }
 

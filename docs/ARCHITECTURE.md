@@ -34,6 +34,10 @@ com.localdeals.finder
   1. Order acceptance: updates order to `ACCEPTED`, decrements deal stock, and dispatches buyer notification.
   2. Review submission: inserts review and recalculates seller average rating.
   3. Deal deletion: automatically cascades to related stats, wishlist records, and reviews.
+- **Security & Session Encryption**: Sensitive session authentication tokens stored in DataStore are encrypted using AES-GCM (`CryptoManager`) backed by the hardware-protected `AndroidKeyStore` (with graceful fallback for JVM test runners). Auto backup and data extraction rules specifically exclude databases and shared preferences (`android:allowBackup="false"`). All inputs are sanitized (`SanitizationUtil`) against XSS/control characters. Logs are masked against PII (emails, phone numbers, auth credentials) via `AppLogger`.
+- **Navigation Role Guards**: Protected routes (`SellerDashboard`, `StoreProfileEdit`, `AddEditDeal`, `AdminPanel`) are defended with `AuthenticatedRoleGuard` which observes the authenticated user's role from `AuthRepository` and blocks unauthorized access.
+- **Pure Local Analytics**: Analytics telemetry is completely self-contained via `AnalyticsTracker` backed by Room (`AnalyticsEventEntity`, `AnalyticsDao`, `RoomAnalyticsTracker`). Zero third-party SDK dependencies or telemetry costs. Feeds real-time event counts directly to Admin and Seller dashboards.
+- **R8 Minification & Resource Shrinking**: Release builds enable full R8 code shrinking, dead code elimination, and resource shrinking (`isMinifyEnabled = true`, `isShrinkResources = true`). Comprehensive keep rules in `proguard-rules.pro` protect Room entities, DAOs, Hilt components, Coroutines, and WorkManager workers. Release APK compiles to an ultra-compact ~1.82 MB.
 - **Zero Dependencies Cost**: Uses purely open-source libraries and no paid APIs (no Firebase, no Google Maps API keys).
 - **Canvas Rendering Safety**: Direct usage of `drawText` on `Canvas` near edges causes buggy native calculations and crashes. A custom `DrawScope.safeDrawText` extension uses `TextMeasurer` manually and is mandated across all map and chart renderings.
 

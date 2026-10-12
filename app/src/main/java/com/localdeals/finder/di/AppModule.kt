@@ -83,4 +83,10 @@ abstract class AppModule {
     abstract fun bindRecentSearchRepository(
         roomRecentSearchRepository: RoomRecentSearchRepository
     ): RecentSearchRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAnalyticsTracker(
+        roomAnalyticsTracker: com.localdeals.finder.data.analytics.RoomAnalyticsTracker
+    ): com.localdeals.finder.domain.analytics.AnalyticsTracker
 }

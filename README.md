@@ -32,3 +32,4 @@
 - Seller Dashboard: Manage deals (Add, Edit, Delete with validation and photos), Manage orders (auto-decrementing stock), Store profile edit, and per-deal conversion analytics.
 - Admin Panel: Comprehensive dashboard for managing users (block/unblock), sellers (suspend/approve), deals, review reports, categories, and platform analytics.
 - Room Local Database: Complete offline persistence with 12 Room entities, 11 DAOs, background first-launch seeder, bounding-box + Haversine distance search, atomic transaction pipelines, and Profile "Reset Demo Data / Clear All" option.
+- Hardening: Security (session encryption with KeyStore AES-GCM, input sanitization, PII masking, no cloud backup of local db/prefs), local Room analytics tracker (0 third-party SDKs), 71 tests (Room DAOs, migrations, use cases, and Compose UI tests), optimization with R8 minification (1.82 MB APK), LazyList keys across all screens, and bilingual support (English + Bengali).

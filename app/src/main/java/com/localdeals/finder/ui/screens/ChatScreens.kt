@@ -121,7 +121,7 @@ fun ChatScreen(
                     }
                 }
 
-                items(uiState.messages.reversed()) { msg ->
+                items(uiState.messages.reversed(), key = { it.id }) { msg ->
                     MessageBubble(msg, isMe = msg.senderId == uiState.currentUserId)
                 }
             }

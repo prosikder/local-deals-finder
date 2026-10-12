@@ -65,4 +65,7 @@ object DatabaseModule {
 
     @Provides
     fun provideRecentSearchDao(db: AppDatabase): RecentSearchDao = db.recentSearchDao()
+
+    @Provides
+    fun provideAnalyticsDao(db: AppDatabase): AnalyticsDao = db.analyticsDao()
 }

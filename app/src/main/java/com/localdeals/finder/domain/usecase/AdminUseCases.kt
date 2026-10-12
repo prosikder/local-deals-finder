@@ -16,23 +16,24 @@ class GetAdminAnalyticsUseCase @Inject constructor(
     private val authRepository: AuthRepository,
     private val sellerRepository: SellerRepository,
     private val dealRepository: DealRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val analyticsTracker: com.localdeals.finder.domain.analytics.AnalyticsTracker
 ) {
     operator fun invoke(): Flow<AdminStats> {
         return combine(
             authRepository.getUsers(),
             sellerRepository.getSellers(),
-            dealRepository.getDeals()
-        ) { users, sellers, deals ->
-            // Note: in a real backend, we'd also fetch orders from an Order repo or similar, but
-            // for mock, we just aggregate what we have. MockOrderRepository isn't exposed easily to get all orders globally unless we add it.
-            // Let's just return a placeholder for totalOrders for now, since orders are usually per-user or per-deal.
+            dealRepository.getDeals(),
+            analyticsTracker.getEventCount("order_placed"),
+            analyticsTracker.getEventCount("deal_view")
+        ) { users, sellers, deals, ordersCount, viewsCount ->
             AdminStats(
                 totalUsers = users.size,
                 totalSellers = sellers.size,
                 totalDeals = deals.size,
-                totalOrders = deals.sumOf { 0.toInt() }, // Mock doesn't have getAllOrders()
-                totalReviews = 0 // Will need to aggregate if we had getAllReviews
+                totalOrders = ordersCount,
+                totalReviews = 0,
+                totalViews = viewsCount
             )
         }
     }

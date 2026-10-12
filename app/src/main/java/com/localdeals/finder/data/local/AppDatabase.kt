@@ -20,7 +20,8 @@ import com.localdeals.finder.data.local.entity.*
         ChatMessageEntity::class,
         OrderRequestEntity::class,
         NotificationEntity::class,
-        RecentSearchEntity::class
+        RecentSearchEntity::class,
+        AnalyticsEventEntity::class
     ],
     version = 1,
     exportSchema = true
@@ -39,6 +40,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun notificationDao(): NotificationDao
     abstract fun recentSearchDao(): RecentSearchDao
+    abstract fun analyticsDao(): AnalyticsDao
 
     companion object {
         const val DATABASE_NAME = "local_deals_finder.db"

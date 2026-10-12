@@ -255,25 +255,29 @@ fun NavGraph(
         
         // Seller Dashboard
         composable(Screen.SellerDashboard.route) {
-            SellerDashboardScreen(
-                onNavigateToAddDeal = {
-                    navController.navigate(Screen.AddEditDeal.createRoute(null))
-                },
-                onNavigateToOrders = {
-                    navController.navigate(Screen.MyOrders.route)
-                },
-                onNavigateToInbox = {
-                    navController.navigate(Screen.ChatList.route)
-                },
-                onNavigateToProfile = {
-                    navController.navigate(Screen.StoreProfileEdit.route)
-                }
-            )
+            AuthenticatedRoleGuard(requiredRoles = listOf(Role.SELLER, Role.ADMIN)) {
+                SellerDashboardScreen(
+                    onNavigateToAddDeal = {
+                        navController.navigate(Screen.AddEditDeal.createRoute(null))
+                    },
+                    onNavigateToOrders = {
+                        navController.navigate(Screen.MyOrders.route)
+                    },
+                    onNavigateToInbox = {
+                        navController.navigate(Screen.ChatList.route)
+                    },
+                    onNavigateToProfile = {
+                        navController.navigate(Screen.StoreProfileEdit.route)
+                    }
+                )
+            }
         }
         composable(Screen.StoreProfileEdit.route) {
-            com.localdeals.finder.ui.screens.StoreProfileEditScreen(
-                onBack = { navController.popBackStack() }
-            )
+            AuthenticatedRoleGuard(requiredRoles = listOf(Role.SELLER, Role.ADMIN)) {
+                com.localdeals.finder.ui.screens.StoreProfileEditScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
         composable(
             route = Screen.AddEditDeal.route,
@@ -283,26 +287,30 @@ fun NavGraph(
                 defaultValue = null
             })
         ) { backStackEntry ->
-            AddEditDealScreen(
-                dealId = backStackEntry.arguments?.getString("dealId"),
-                onNavigateBack = { navController.popBackStack() }
-            )
+            AuthenticatedRoleGuard(requiredRoles = listOf(Role.SELLER, Role.ADMIN)) {
+                AddEditDealScreen(
+                    dealId = backStackEntry.arguments?.getString("dealId"),
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
         }
 
         // Admin Panel
         composable(Screen.AdminPanel.route) { 
-            val adminViewModel: com.localdeals.finder.ui.screens.AdminDashboardViewModel = hiltViewModel()
-            AdminDashboardScreen(
-                viewModel = adminViewModel,
-                onNavigateBack = { navController.popBackStack() },
-                onLogout = {
-                    adminViewModel.logout {
-                        navController.navigate(Screen.Splash.route) {
-                            popUpTo(0) { inclusive = true }
+            AuthenticatedRoleGuard(requiredRoles = listOf(Role.ADMIN)) {
+                val adminViewModel: com.localdeals.finder.ui.screens.AdminDashboardViewModel = hiltViewModel()
+                AdminDashboardScreen(
+                    viewModel = adminViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onLogout = {
+                        adminViewModel.logout {
+                            navController.navigate(Screen.Splash.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
 
         // Debug Gallery

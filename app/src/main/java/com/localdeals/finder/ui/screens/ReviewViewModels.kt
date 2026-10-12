@@ -68,6 +68,8 @@ class ReviewViewModel @Inject constructor(
                 return@launch
             }
 
+            val cleanComment = com.localdeals.finder.util.SanitizationUtil.sanitizeText(currentState.comment, 500)
+
             val review = Review(
                 id = UUID.randomUUID().toString(),
                 dealId = dealId,
@@ -75,7 +77,7 @@ class ReviewViewModel @Inject constructor(
                 userId = user.id,
                 userName = user.name,
                 rating = currentState.rating,
-                comment = currentState.comment,
+                comment = cleanComment,
                 timestampMillis = System.currentTimeMillis()
             )
 

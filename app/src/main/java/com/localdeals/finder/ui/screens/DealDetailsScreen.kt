@@ -263,7 +263,7 @@ fun DealDetailsScreen(
                                         contentPadding = PaddingValues(horizontal = 16.dp),
                                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
-                                        items(data.relatedDeals) { related ->
+                                        items(data.relatedDeals, key = { it.id }) { related ->
                                             Box(modifier = Modifier.width(280.dp)) {
                                                 DealCard(
                                                     deal = related,
@@ -294,7 +294,7 @@ fun DealDetailsScreen(
                                 )
                             }
                         } else {
-                            items(data.reviews) { review ->
+                            items(data.reviews, key = { it.id }) { review ->
                                 ReviewItem(
                                     review = review,
                                     onReport = { viewModel.reportReview(review.id) }
