@@ -40,6 +40,10 @@ com.localdeals.finder
 - **R8 Minification & Resource Shrinking**: Release builds enable full R8 code shrinking, dead code elimination, and resource shrinking (`isMinifyEnabled = true`, `isShrinkResources = true`). Comprehensive keep rules in `proguard-rules.pro` protect Room entities, DAOs, Hilt components, Coroutines, and WorkManager workers. Release APK compiles to an ultra-compact ~1.82 MB.
 - **Zero Dependencies Cost**: Uses purely open-source libraries and no paid APIs (no Firebase, no Google Maps API keys).
 - **Canvas Rendering Safety**: Direct usage of `drawText` on `Canvas` near edges causes buggy native calculations and crashes. A custom `DrawScope.safeDrawText` extension uses `TextMeasurer` manually and is mandated across all map and chart renderings.
+- **Branding & SplashScreen API**: Android 12+ SplashScreen API (`androidx.core:core-splashscreen:1.0.1`) integrated via `Theme.App.Starting` and `installSplashScreen()`. Custom vector adaptive icons with Deal Orange (`#FF6B1A`) background, location pin + price tag motif foreground, and Material You Android 13+ monochrome themed icon (`ic_launcher_monochrome.xml`).
+- **3-Slide First-Launch Onboarding**: Interactive Compose onboarding pager (`OnboardingScreen.kt`) featuring smooth slide transitions, animated dots indicator, and "Skip" / "Get Started" buttons. Completion state persisted in `DataStoreManager`.
+- **Release Engineering & AAB Packaging**: Versioning configured to `versionCode = 1`, `versionName = "1.0.0"`. Release signing config supports external `keystore.properties` (with Play App Signing recommended). Full R8 minification and resource shrinking generates production Android App Bundle (`app-release.aab`, ~4.27 MB). Debug screens (`ComponentGallery`) and crash debug dialogues are completely stripped from release builds via `BuildConfig.DEBUG`.
+- **v2 Swap-In Architecture**: Established domain repository interfaces (`DealRepository`, `ChatRepository`, etc.) facilitate drop-in replacement with cloud sync (Firebase/Supabase), Google Play Billing, and FCM push notifications without modifying UI screens or ViewModels (see `docs/ROADMAP.md`).
 
 ## Dependency List & Versions
 - Kotlin 1.9.23
@@ -49,4 +53,5 @@ com.localdeals.finder
 - Room 2.6.1 (with room-ktx, room-compiler KSP, room-testing)
 - DataStore 1.1.0
 - WorkManager 2.9.0
+- Core SplashScreen 1.0.1
 - Robolectric 4.12.2 (for local JVM SQLite and DAO unit testing)

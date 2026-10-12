@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Solid Silhouette of Pin with cutout price tag for Android 13+ Themed Icons -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M54,26 C41.8,26 32,35.8 32,48 C32,63.5 52,79.5 53.1,80.4 C53.6,80.8 54.4,80.8 54.9,80.4 C56,79.5 76,63.5 76,48 C76,35.8 66.2,26 54,26 Z M48,38 L60,38 L65,45 L58,58 L48,58 Z M52,41 C52,42.1 51.1,43 50,43 C48.9,43 48,42.1 48,41 C48,39.9 48.9,39 50,39 C51.1,39 52,39.9 52,41 Z" />
+</vector>

@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer Location Pin in Deal Orange -->
+    <path
+        android:fillColor="#FF6B1A"
+        android:pathData="M54,22 C39.6,22 28,33.6 28,48 C28,66.4 51.6,85.4 52.9,86.5 C53.6,87 54.4,87 55.1,86.5 C56.4,85.4 80,66.4 80,48 C80,33.6 68.4,22 54,22 Z" />
+
+    <!-- Inner Price Tag in Pure White -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M46,36 L62,36 L68,44 L59,58 L46,58 Z" />
+
+    <!-- Eyelet in Deal Orange -->
+    <path
+        android:fillColor="#FF6B1A"
+        android:pathData="M51,40 C51,41.1 50.1,42 49,42 C47.9,42 47,41.1 47,40 C47,38.9 47.9,38 49,38 C50.1,38 51,38.9 51,40 Z" />
+
+    <!-- Price Tag Percentage Slash in Deal Orange -->
+    <path
+        android:fillColor="#FF6B1A"
+        android:pathData="M60,45 L63,45 L56,54 L53,54 Z" />
+</vector>

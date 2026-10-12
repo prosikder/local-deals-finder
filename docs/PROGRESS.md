@@ -37,7 +37,7 @@
 | 12 | Seller Dashboard & Admin Panel | done |
 | 13 | Local Offline Database (Room) | done |
 | 14 | Security, Analytics, Testing & Optimization | done |
-| 15 | Final Integration & Play Store Release | NEXT |
+| 15 | Final Integration & Play Store Release | done |
 
 Status values: done / current / next / pending
 
@@ -69,6 +69,11 @@ Status values: done / current / next / pending
   - **Testing:** 71 unit and UI tests passing 100%. Added `CryptoManagerTest`, `SanitizationUtilTest`, `RoomDaoTest` analytics suite, and Compose UI tests (`ComposeFlowTest`) verifying Login, Empty states, and Order flows.
   - **Optimization:** Added explicit stable `key` parameters to all `LazyColumn`, `LazyRow`, and `LazyVerticalGrid` item invocations across every screen. Recomposition verified. Configured R8 minification and resource shrinking in release builds. Generated release build (`assembleRelease`): final APK size is an ultra-lean 1.82 MB (1,910,133 bytes).
   - **Quality:** Bilingual string resources extracted with English (`res/values/strings.xml`) and Bengali (`res/values-bn/strings.xml`). Added language selector option in `ProfileScreen` along with tablet/landscape `widthIn(max = 600.dp)` constraints and accessible 48dp minimum touch targets.
+- **Step 15 (2026-10-13):** Final Integration & Play Store Release Prep.
+  - **Final Integration:** Stripped debug screens (`ComponentGallery`) and crash debug dialogues from release builds via `BuildConfig.DEBUG`. Seeded Admin credentials isolated to debug. Navigation role guards verified end to end.
+  - **Branding:** Designed vector adaptive icon (`ic_launcher.xml`, `ic_launcher_round.xml`, `ic_launcher_background.xml`, `ic_launcher_foreground.xml`) featuring location pin + price tag motif in deal-orange (`#FF6B1A`). Added Android 13+ Material You monochrome themed icon (`ic_launcher_monochrome.xml`). Configured official Android 12+ SplashScreen API (`core-splashscreen:1.0.1`) with `Theme.App.Starting` and `installSplashScreen()`. Built 3-slide first-launch onboarding pager (`OnboardingScreen.kt`) with animated dots indicator, Skip/Get Started actions, and DataStore completion persistence.
+  - **Release Engineering:** `versionCode = 1`, `versionName = "1.0.0"`. Configured release signing config supporting external `keystore.properties` (with `keystore.properties.example` template and `.gitignore` protection). Successfully built production Android App Bundle via `./gradlew bundleRelease` (`app-release.aab`, ~4.27 MB) with R8 minification and resource shrinking.
+  - **Play Console Pack & Docs:** Created `docs/PLAY_STORE.md` (Store listing copy in English & Bengali, keyword ideas, screenshot checklist, feature graphic brief, complete privacy policy, Google Play Data Safety form answers, and 14-day closed testing plan). Created `docs/ROADMAP.md` (v2 cloud architecture swap-in strategy for Firebase sync, live chat, FCM, paid promotions, and Play Billing subscriptions). Created `docs/REGRESSION.md` (10-section manual regression checklist). Updated `README.md` and `ARCHITECTURE.md`. All 15 project steps marked done!
 
 ## Known Issues
 
@@ -95,9 +100,17 @@ Status values: done / current / next / pending
 - **Step 12 (Admin):** `AdminUseCasesTest` passes (specifically `DeleteCategoryUseCase`). The app correctly limits Admin routes to admin users, reporting reviews passes events back to the UI state appropriately, and the Admin Dashboard renders correctly without issues.
 - **Step 13 (Room Persistence):** Unit tests `RoomDaoTest` and `MigrationTest` executed and passed on Robolectric JVM. Verifies user authentication and blocked status queries, bounding-box prefilter on Dhaka sellers and deals, atomic `acceptOrderTransaction` (order updated to ACCEPTED, stock decremented, and buyer notification created in single transaction), atomic `submitReviewTransaction` (review inserted and seller average rating recalculated), wishlist alerts toggle and removal, recent searches with limit/clear, and stub migration `MIGRATION_1_2` altering users table. Profile screen provides working "Reset Demo Data / Clear All" confirmation dialog tied to `DatabaseSeeder`.
 - **Step 14 (Hardening):** `./gradlew testDebugUnitTest` executed 71 tests with 100% success (0 failures). Tests include: `CryptoManagerTest` (AES-GCM encryption, decryption, plaintext compatibility), `SanitizationUtilTest` (HTML/XSS stripping, phone normalization, length limits), `RoomDaoTest` (full suite including `AnalyticsDao` logging, count aggregation, parameter substring matching, and wipe), `ComposeFlowTest` (Login button click, EmptyState rendering, OrderCard cancel interaction), plus all existing domain use cases (`SearchDealsUseCaseTest`, `OrderLifecycleTest`, `GetNearbyDealsUseCaseTest`, `UpdateSellerRatingUseCaseTest`, `MigrationTest`, `AdminUseCasesTest`). `./gradlew assembleRelease` completed successfully with R8 minification and resource shrinking, generating a release APK of 1.82 MB (1,910,133 bytes).
+- **Step 15 (Final Integration & Play Store Release):**
+  - All 71 tests continue to pass 100% via `./gradlew testDebugUnitTest`.
+  - `./gradlew bundleRelease` completed successfully in 8m 22s. R8 minification and resource shrinking successfully packaged `app/build/outputs/bundle/release/app-release.aab` (size: ~4.27 MB).
+  - SplashScreen API verified with `Theme.App.Starting` and `installSplashScreen()`.
+  - 3-slide first-launch onboarding verified with smooth pager transitions and DataStore completion persistence.
+  - Vector adaptive icon (`ic_launcher.xml`, `ic_launcher_round.xml`) and Android 13+ Material You monochrome themed icon (`ic_launcher_monochrome.xml`) verified.
+  - Release signing configuration (`keystore.properties`) tested with fallback.
+  - Documentation suite complete: `docs/PLAY_STORE.md`, `docs/ROADMAP.md`, `docs/REGRESSION.md`, `README.md`, `ARCHITECTURE.md`.
 
 ## Resume Note
 
-- **Last completed step:** Step 14 (Hardening: Security, Analytics, Testing & Optimization)
-- **Next prompt:** Prompt 15 (Final Integration & Play Store Release)
-- **Unfinished work / things the next window must know:** Prompt 14 is 100% complete and verified. R8 is fully configured and minification is enabled with custom keep rules. Local Room analytics tracker is active. All 71 tests pass cleanly. Ready to proceed with Prompt 15.
+- **Last completed step:** Step 15 (Final Integration & Play Store Release Prep) - **ALL 15 STEPS COMPLETE!**
+- **Next prompt:** None. The 15-prompt roadmap is 100% finished.
+- **Project State:** Production-ready release build. Android App Bundle (`app-release.aab`) generated. All 15 development steps are fully built, tested, documented, and verified. Ready for Google Play Console submission!

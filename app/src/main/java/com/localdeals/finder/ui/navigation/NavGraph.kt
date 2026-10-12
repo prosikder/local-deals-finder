@@ -32,6 +32,11 @@ fun NavGraph(
 
             LaunchedEffect(state) {
                 when (state) {
+                    is SplashState.GoToOnboarding -> {
+                        navController.navigate(Screen.Onboarding.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
                     is SplashState.GoToLogin -> {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Splash.route) { inclusive = true }
@@ -57,6 +62,15 @@ fun NavGraph(
                 }
             }
             SplashScreen()
+        }
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onFinished = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(Screen.Login.route) {
             LoginScreen(
@@ -313,9 +327,11 @@ fun NavGraph(
             }
         }
 
-        // Debug Gallery
-        composable(Screen.ComponentGallery.route) {
-            ComponentGalleryScreen(onBack = { navController.popBackStack() })
+        // Debug Gallery (only available in DEBUG builds)
+        if (com.localdeals.finder.BuildConfig.DEBUG) {
+            composable(Screen.ComponentGallery.route) {
+                ComponentGalleryScreen(onBack = { navController.popBackStack() })
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.localdeals.finder.data.local
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -21,6 +22,17 @@ class DataStoreManager @Inject constructor(
         val LOGGED_IN_USER_ID = stringPreferencesKey("logged_in_user_id")
         val MANUAL_LOCATION = stringPreferencesKey("manual_location")
         val RECENT_SEARCHES = stringSetPreferencesKey("recent_searches")
+        val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+    }
+
+    val isOnboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[ONBOARDING_COMPLETED] ?: false
+    }
+
+    suspend fun setOnboardingCompleted(completed: Boolean = true) {
+        context.dataStore.edit { preferences ->
+            preferences[ONBOARDING_COMPLETED] = completed
+        }
     }
 
     val loggedInUserId: Flow<String?> = context.dataStore.data.map { preferences ->

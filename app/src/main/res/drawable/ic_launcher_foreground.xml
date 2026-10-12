@@ -3,5 +3,34 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:fillColor="#FFFFFF" android:pathData="M54,20 C35.2,20 20,35.2 20,54 C20,72.8 35.2,88 54,88 C72.8,88 88,72.8 88,54 C88,35.2 72.8,20 54,20 Z" />
+    <!-- Drop shadow for pin -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M54,84 C51.5,84 43,81 43,81 C43,81 50,78 54,78 C58,78 65,81 65,81 C65,81 56.5,84 54,84 Z" />
+
+    <!-- Outer Location Pin in Pure White -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,26 C41.8,26 32,35.8 32,48 C32,63.5 52,79.5 53.1,80.4 C53.6,80.8 54.4,80.8 54.9,80.4 C56,79.5 76,63.5 76,48 C76,35.8 66.2,26 54,26 Z" />
+
+    <!-- Price Tag Cutout Motif inside Pin in Deal Orange -->
+    <path
+        android:fillColor="#FF6B1A"
+        android:pathData="M48,38 L60,38 L65,45 L58,58 L48,58 Z" />
+
+    <!-- Price Tag Eyelet / Hole in White -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52,43 C50.9,43 50,42.1 50,41 C50,39.9 50.9,39 52,39 C53.1,39 54,39.9 54,41 C54,42.1 53.1,43 52,43 Z" />
+
+    <!-- Percent / Deal Sparkle accent in White -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M59,49 L62,49 L55,57 L52,57 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,49 A1.2,1.2 0 1 1 54,46.6 A1.2,1.2 0 1 1 54,49 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,57 A1.2,1.2 0 1 1 60,54.6 A1.2,1.2 0 1 1 60,57 Z" />
 </vector>

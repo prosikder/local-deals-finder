@@ -153,9 +153,7 @@ fun HomeTopBar(
                     )
                 }
             }
-            val context = androidx.compose.ui.platform.LocalContext.current
-            val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
-            if (isDebug) {
+            if (com.localdeals.finder.BuildConfig.DEBUG) {
                 TextButton(onClick = onNavigateGallery) {
                     Text("UI Gallery")
                 }
