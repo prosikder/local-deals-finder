@@ -19,6 +19,23 @@ class DatabaseSeeder @Inject constructor(
         val userCount = database.userDao().getUserByIdSync("admin_id")
         if (userCount == null) {
             seedDatabase()
+        } else {
+            val alice = database.userDao().getUserByEmail("alice@example.com")
+            if (alice == null) {
+                val aliceSalt = HashUtil.generateSalt()
+                val aliceHash = HashUtil.hashPassword("pass123", aliceSalt)
+                database.userDao().insertUser(
+                    UserEntity(
+                        id = "user_alice",
+                        name = "Alice",
+                        email = "alice@example.com",
+                        passwordHash = aliceHash,
+                        passwordSalt = aliceSalt,
+                        phone = "01700000003",
+                        role = Role.USER
+                    )
+                )
+            }
         }
     }
 
@@ -83,6 +100,19 @@ class DatabaseSeeder @Inject constructor(
                 role = Role.USER
             )
             usersToSeed.add(user2)
+
+            val aliceSalt = HashUtil.generateSalt()
+            val aliceHash = HashUtil.hashPassword("pass123", aliceSalt)
+            val alice = UserEntity(
+                id = "user_alice",
+                name = "Alice",
+                email = "alice@example.com",
+                passwordHash = aliceHash,
+                passwordSalt = aliceSalt,
+                phone = "01700000003",
+                role = Role.USER
+            )
+            usersToSeed.add(alice)
 
             // Seed seller users for each seller
             val sellerUsers = MockData.sellers.map { seller ->
