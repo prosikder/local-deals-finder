@@ -13,10 +13,10 @@ interface SellerDao {
     @Query("SELECT * FROM sellers")
     fun getAllSellers(): Flow<List<SellerEntity>>
 
-    @Query("SELECT * FROM sellers WHERE id = :id")
+    @Query("SELECT * FROM sellers WHERE id = :id OR userId = :id LIMIT 1")
     fun getSellerById(id: String): Flow<SellerEntity?>
 
-    @Query("SELECT * FROM sellers WHERE id = :id")
+    @Query("SELECT * FROM sellers WHERE id = :id OR userId = :id LIMIT 1")
     suspend fun getSellerByIdSync(id: String): SellerEntity?
 
     @Query("SELECT * FROM sellers WHERE latitude BETWEEN :minLat AND :maxLat AND longitude BETWEEN :minLng AND :maxLng")

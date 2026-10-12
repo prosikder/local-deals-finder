@@ -229,7 +229,12 @@ fun OrderCard(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+            val sellerAcc = deal?.sellerId?.removePrefix("s_")?.let { "Seller: user_s$it@local.app" } ?: ""
+            if (sellerAcc.isNotBlank()) {
+                Text(sellerAcc, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
             Text("Quantity: ${order.quantity}", style = MaterialTheme.typography.bodyMedium)
             Text("Date: $dateStr", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (order.note.isNotBlank()) {
@@ -237,7 +242,10 @@ fun OrderCard(
             }
             
             val isBuyer = order.buyerId == currentUserId
-            val isSeller = order.sellerId == currentUserId
+            val sellerSuffix = currentUserId.removePrefix("user_s")
+            val isSeller = order.sellerId == currentUserId ||
+                (sellerSuffix.isNotEmpty() && (order.sellerId == "s_$sellerSuffix" || order.sellerId == "user_s$sellerSuffix")) ||
+                (deal != null && (deal.sellerId == currentUserId || (sellerSuffix.isNotEmpty() && deal.sellerId == "s_$sellerSuffix")))
 
             if (isBuyer) {
                 if (order.status == OrderStatus.PENDING) {

@@ -96,7 +96,7 @@ class RoomOrderRepository @Inject constructor(
         simulatorEnabled.value = enabled
         if (enabled) {
             repositoryScope.launch {
-                val activeOrders = orderDao.getOrdersForUser("").firstOrNull() ?: emptyList()
+                val activeOrders = orderDao.getAllOrders().firstOrNull() ?: emptyList()
                 activeOrders.filter {
                     it.status == OrderStatus.PENDING || it.status == OrderStatus.ACCEPTED || it.status == OrderStatus.READY
                 }.forEach { simulateOrderLifecycle(it.id) }

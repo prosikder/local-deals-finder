@@ -12,8 +12,21 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface OrderDao {
-    @Query("SELECT * FROM order_requests WHERE buyerId = :userId OR sellerId = :userId ORDER BY timestampMillis DESC")
+    @Query("""
+        SELECT DISTINCT orders.* FROM order_requests orders
+        LEFT JOIN sellers ON orders.sellerId = sellers.id OR orders.sellerId = sellers.userId
+        WHERE orders.buyerId = :userId 
+           OR orders.sellerId = :userId 
+           OR sellers.userId = :userId
+           OR sellers.id = :userId
+           OR orders.sellerId = 's_' || REPLACE(:userId, 'user_s', '')
+           OR orders.sellerId = 'user_s' || REPLACE(:userId, 's_', '')
+        ORDER BY orders.timestampMillis DESC
+    """)
     fun getOrdersForUser(userId: String): Flow<List<OrderRequestEntity>>
+
+    @Query("SELECT * FROM order_requests ORDER BY timestampMillis DESC")
+    fun getAllOrders(): Flow<List<OrderRequestEntity>>
 
     @Query("SELECT * FROM order_requests WHERE dealId = :dealId ORDER BY timestampMillis DESC")
     fun getOrdersForDeal(dealId: String): Flow<List<OrderRequestEntity>>

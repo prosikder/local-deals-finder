@@ -15,7 +15,15 @@ interface DealDao {
     @Query("SELECT * FROM deals")
     fun getAllDeals(): Flow<List<DealEntity>>
 
-    @Query("SELECT * FROM deals WHERE sellerId = :sellerId")
+    @Query("""
+        SELECT DISTINCT deals.* FROM deals
+        LEFT JOIN sellers ON deals.sellerId = sellers.id OR deals.sellerId = sellers.userId
+        WHERE deals.sellerId = :sellerId
+           OR sellers.userId = :sellerId
+           OR sellers.id = :sellerId
+           OR deals.sellerId = 's_' || REPLACE(:sellerId, 'user_s', '')
+           OR deals.sellerId = 'user_s' || REPLACE(:sellerId, 's_', '')
+    """)
     fun getDealsForSeller(sellerId: String): Flow<List<DealEntity>>
 
     @Query("SELECT * FROM deals WHERE id = :id")

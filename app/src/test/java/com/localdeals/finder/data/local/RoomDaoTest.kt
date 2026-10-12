@@ -194,6 +194,39 @@ class RoomDaoTest {
     }
 
     @Test
+    fun testSellerCanViewOrdersByUserIdOrStoreId() = runBlocking {
+        val seller = SellerEntity(
+            id = "s_4",
+            userId = "user_s4",
+            businessName = "Fresh Bites",
+            address = "Banani",
+            latitude = 23.79,
+            longitude = 90.40
+        )
+        sellerDao.insertSeller(seller)
+
+        val order = OrderRequestEntity(
+            id = "ord_cushion",
+            dealId = "d_39",
+            buyerId = "user_1",
+            sellerId = "s_4",
+            quantity = 2,
+            status = OrderStatus.PENDING
+        )
+        orderDao.insertOrder(order)
+
+        // Query with user_s4 (the logged-in seller user ID)
+        val sellerOrders = orderDao.getOrdersForUser("user_s4").first()
+        assertEquals(1, sellerOrders.size)
+        assertEquals("ord_cushion", sellerOrders[0].id)
+
+        // Query with user_1 (the buyer user ID)
+        val buyerOrders = orderDao.getOrdersForUser("user_1").first()
+        assertEquals(1, buyerOrders.size)
+        assertEquals("ord_cushion", buyerOrders[0].id)
+    }
+
+    @Test
     fun testCriticalTransaction_ReviewSubmittedUpdatesSellerRating() = runBlocking {
         val seller = SellerEntity(
             id = "s_rate",
