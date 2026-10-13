@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "100000000001",
-    "project_id": "local-deals-finder-v1",
-    "storage_bucket": "local-deals-finder-v1.appspot.com"
+    "project_number": "866998298151",
+    "project_id": "local-deals-finder-581b9",
+    "storage_bucket": "local-deals-finder-581b9.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:100000000001:android:abcdef1234567890abcdef",
+        "mobilesdk_app_id": "1:866998298151:android:4fd3986e36b51d82eed002",
         "android_client_info": {
           "package_name": "com.localdeals.finder"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD-DummyFirebaseKeyLocalDealsFinder"
+          "current_key": "AIzaSyC2wmmDWpncLvAn-TOyvAUP1KkpDB5ZUK0"
         }
       ],
       "services": {
