@@ -78,6 +78,22 @@ class FirebaseSyncManager @Inject constructor(
                     }
                 }
                 if (remoteDeals.isNotEmpty()) {
+                    remoteDeals.forEach { deal ->
+                        if (database.sellerDao().getSellerByIdSync(deal.sellerId) == null) {
+                            database.sellerDao().insertSeller(
+                                com.localdeals.finder.data.local.entity.SellerEntity(
+                                    id = deal.sellerId,
+                                    userId = deal.sellerId,
+                                    businessName = "Partner Merchant",
+                                    address = "Dhaka, Bangladesh",
+                                    latitude = 23.8103,
+                                    longitude = 90.4125,
+                                    rating = 5.0,
+                                    status = "ACTIVE"
+                                )
+                            )
+                        }
+                    }
                     database.dealDao().insertDeals(remoteDeals)
                     AppLogger.d("FirebaseSync", "Successfully synced ${remoteDeals.size} deals from Firestore to Room.")
                 }

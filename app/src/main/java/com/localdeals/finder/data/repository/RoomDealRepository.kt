@@ -17,7 +17,8 @@ import kotlin.math.cos
 @Singleton
 class RoomDealRepository @Inject constructor(
     private val dealDao: DealDao,
-    private val dealStatsDao: DealStatsDao
+    private val dealStatsDao: DealStatsDao,
+    private val sellerDao: com.localdeals.finder.data.local.dao.SellerDao
 ) : DealRepository {
 
     override fun getDeals(): Flow<List<Deal>> {
@@ -33,11 +34,34 @@ class RoomDealRepository @Inject constructor(
     }
 
     override suspend fun addDeal(deal: Deal) {
-        dealDao.insertDeal(deal.toEntity())
+        val resolved = resolveSellerForDeal(deal)
+        dealDao.insertDeal(resolved.toEntity())
     }
 
     override suspend fun updateDeal(deal: Deal) {
-        dealDao.updateDeal(deal.toEntity())
+        val resolved = resolveSellerForDeal(deal)
+        dealDao.updateDeal(resolved.toEntity())
+    }
+
+    private suspend fun resolveSellerForDeal(deal: Deal): Deal {
+        val seller = sellerDao.getSellerByIdSync(deal.sellerId)
+        return if (seller != null) {
+            deal.copy(sellerId = seller.id)
+        } else {
+            // Ensure referenced seller exists in database so foreign key constraint never fails
+            val fallbackSeller = com.localdeals.finder.data.local.entity.SellerEntity(
+                id = deal.sellerId,
+                userId = deal.sellerId,
+                businessName = "Local Merchant",
+                address = "Dhaka, Bangladesh",
+                latitude = 23.8103,
+                longitude = 90.4125,
+                rating = 5.0,
+                status = "ACTIVE"
+            )
+            sellerDao.insertSeller(fallbackSeller)
+            deal
+        }
     }
 
     override suspend fun deleteDeal(id: String) {

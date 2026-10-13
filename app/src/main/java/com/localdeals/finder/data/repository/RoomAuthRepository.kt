@@ -18,6 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class RoomAuthRepository @Inject constructor(
     private val userDao: UserDao,
+    private val sellerDao: com.localdeals.finder.data.local.dao.SellerDao,
     private val dataStoreManager: DataStoreManager
 ) : AuthRepository {
 
@@ -71,6 +72,19 @@ class RoomAuthRepository @Inject constructor(
         )
 
         userDao.insertUser(newUser)
+        if (role == Role.SELLER) {
+            val sellerEntity = com.localdeals.finder.data.local.entity.SellerEntity(
+                id = "s_${newUser.id.take(8)}",
+                userId = newUser.id,
+                businessName = name,
+                address = "Dhaka, Bangladesh",
+                latitude = 23.8103,
+                longitude = 90.4125,
+                rating = 5.0,
+                status = "ACTIVE"
+            )
+            sellerDao.insertSeller(sellerEntity)
+        }
         dataStoreManager.saveSession(newUser.id)
         return Result.success(newUser.toDomain())
     }

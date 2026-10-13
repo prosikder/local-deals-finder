@@ -18,6 +18,7 @@ data class AddEditDealState(
     val isSuccess: Boolean = false,
     val error: String? = null,
     val dealId: String? = null,
+    val sellerId: String = "",
     val title: String = "",
     val description: String = "",
     val price: String = "",
@@ -34,6 +35,7 @@ class AddEditDealViewModel @Inject constructor(
     private val dealRepository: DealRepository,
     private val categoryRepository: CategoryRepository,
     private val authRepository: AuthRepository,
+    private val sellerRepository: SellerRepository,
     private val firebaseSyncManager: com.localdeals.finder.data.cloud.FirebaseSyncManager
 ) : ViewModel() {
 
@@ -63,6 +65,7 @@ class AddEditDealViewModel @Inject constructor(
             if (deal != null) {
                 _state.value = _state.value.copy(
                     dealId = deal.id,
+                    sellerId = deal.sellerId,
                     title = deal.title,
                     description = deal.description,
                     price = deal.originalPrice.toString(),
@@ -97,6 +100,11 @@ class AddEditDealViewModel @Inject constructor(
                 return@launch
             }
 
+            val seller = sellerRepository.getSellerById(user.id)
+            val effectiveSellerId = _state.value.sellerId.ifEmpty {
+                seller?.id ?: user.id
+            }
+
             val priceVal = _state.value.price.toDoubleOrNull() ?: 0.0
             val discountVal = _state.value.discount.toIntOrNull() ?: 0
             val stockVal = _state.value.stock.toIntOrNull() ?: 0
@@ -121,7 +129,7 @@ class AddEditDealViewModel @Inject constructor(
 
             val deal = Deal(
                 id = _state.value.dealId ?: UUID.randomUUID().toString(),
-                sellerId = user.id,
+                sellerId = effectiveSellerId,
                 title = cleanTitle,
                 description = cleanDesc,
                 originalPrice = priceVal,
