@@ -282,6 +282,11 @@ fun NavGraph(
                     },
                     onNavigateToProfile = {
                         navController.navigate(Screen.StoreProfileEdit.route)
+                    },
+                    onLogout = {
+                        navController.navigate(Screen.Splash.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 )
             }

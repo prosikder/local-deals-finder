@@ -113,4 +113,11 @@ class SellerDashboardViewModel @Inject constructor(
             }
         }
     }
+
+    fun logout(onLogoutComplete: () -> Unit) {
+        viewModelScope.launch {
+            authRepository.logout()
+            onLogoutComplete()
+        }
+    }
 }

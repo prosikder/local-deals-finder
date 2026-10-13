@@ -25,15 +25,22 @@ fun SellerDashboardScreen(
     onNavigateToOrders: () -> Unit = {},
     onNavigateToInbox: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
+    onLogout: () -> Unit = {},
     viewModel: SellerDashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var dealToDelete by remember { mutableStateOf<String?>(null) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Seller Dashboard") }
+                title = { Text("Seller Dashboard") },
+                actions = {
+                    TextButton(onClick = { showLogoutDialog = true }) {
+                        Text("Logout", color = MaterialTheme.colorScheme.error)
+                    }
+                }
             )
         }
     ) { padding ->
@@ -124,6 +131,27 @@ fun SellerDashboardScreen(
                 },
                 dismissButton = {
                     TextButton(onClick = { dealToDelete = null }) { Text("Cancel") }
+                }
+            )
+        }
+
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { showLogoutDialog = false },
+                title = { Text("Logout") },
+                text = { Text("Are you sure you want to log out of your seller account?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showLogoutDialog = false
+                        viewModel.logout(onLogout)
+                    }) {
+                        Text("Logout", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showLogoutDialog = false }) {
+                        Text("Cancel")
+                    }
                 }
             )
         }
