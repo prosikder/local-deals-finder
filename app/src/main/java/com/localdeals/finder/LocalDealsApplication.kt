@@ -36,12 +36,19 @@ class LocalDealsApplication : Application() {
         
         scheduleNotificationWorker()
 
-        // Background Cloud Sync with Firebase Firestore
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+        // Background Cloud Sync with Firebase Firestore (guarded behind ENABLE_CLOUD_SYNC flag)
+        if (com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) {
             try {
-                firebaseSyncManager.syncDeals()
+                com.google.firebase.FirebaseApp.initializeApp(this)
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                    try {
+                        firebaseSyncManager.syncDeals()
+                    } catch (e: Exception) {
+                        // Gracefully ignore sync errors if offline
+                    }
+                }
             } catch (e: Exception) {
-                // Gracefully ignore sync errors if offline
+                // Gracefully ignore if Firebase config is missing
             }
         }
     }

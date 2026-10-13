@@ -27,6 +27,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return
         AppLogger.d("FCM", "New Firebase device token generated: $token")
         CoroutineScope(Dispatchers.IO).launch {
             dataStoreManager.saveFcmToken(token)
@@ -35,6 +36,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return
         AppLogger.d("FCM", "Message received from: ${remoteMessage.from}")
 
         val title = remoteMessage.notification?.title

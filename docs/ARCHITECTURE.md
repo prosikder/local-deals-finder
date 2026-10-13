@@ -42,7 +42,19 @@ com.localdeals.finder
 - **Canvas Rendering Safety**: Direct usage of `drawText` on `Canvas` near edges causes buggy native calculations and crashes. A custom `DrawScope.safeDrawText` extension uses `TextMeasurer` manually and is mandated across all map and chart renderings.
 - **Branding & SplashScreen API**: Android 12+ SplashScreen API (`androidx.core:core-splashscreen:1.0.1`) integrated via `Theme.App.Starting` and `installSplashScreen()`. Custom vector adaptive icons with Deal Orange (`#FF6B1A`) background, location pin + price tag motif foreground, and Material You Android 13+ monochrome themed icon (`ic_launcher_monochrome.xml`).
 - **3-Slide First-Launch Onboarding**: Interactive Compose onboarding pager (`OnboardingScreen.kt`) featuring smooth slide transitions, animated dots indicator, and "Skip" / "Get Started" buttons. Completion state persisted in `DataStoreManager`.
-- **Release Engineering & AAB Packaging**: Versioning configured to `versionCode = 1`, `versionName = "1.0.0"`. Release signing config supports external `keystore.properties` (with Play App Signing recommended). Full R8 minification and resource shrinking generates production Android App Bundle (`app-release.aab`, ~4.27 MB). Debug screens (`ComponentGallery`) and crash debug dialogues are completely stripped from release builds via `BuildConfig.DEBUG`.
+- **Release Engineering & Packaging**: 
+  - Versioning: `versionCode = 1`, `versionName = "1.0.0"`.
+  - Build Types:
+    - `debug`: Developer build with unminified code, debug keystore signing, and auto-seeded test accounts.
+    - `release`: Production build with full R8 minification and resource shrinking (`isMinifyEnabled = true`, `isShrinkResources = true`). Signed with production release keystore (when `keystore.properties` is configured) or unsigned. Zero test accounts seeded. Generates production Android App Bundle (`app-release.aab`, ~4.27 MB).
+    - `releaseTest`: Physical device testing build type (`initWith(release)`). Identical to `release` with full R8 minification and resource shrinking, but signed with the standard Android debug key so developers and QA can install it directly onto devices without Play Store distribution (~2.97 MB APK).
+  - Debug screens (`ComponentGallery`) and crash debug dialogues are completely stripped from non-debug builds via `BuildConfig.DEBUG`.
+- **Offline-First by Default Architecture (Cloud Sync Gate)**:
+  - The v1 release is 100% offline-only as specified in `docs/PLAY_STORE.md`.
+  - All cloud synchronization (`FirebaseSyncManager`, `AppFirebaseMessagingService`, and FCM) is guarded behind a single Gradle build property / BuildConfig flag: `ENABLE_CLOUD_SYNC` (default `false`).
+  - `FirebaseInitProvider` is explicitly removed from `AndroidManifest.xml` via `tools:node="remove"`, ensuring zero automatic background initialization of Firebase SDKs.
+  - With `ENABLE_CLOUD_SYNC = false`: no Firebase initialization occurs, no background listeners are attached, zero network calls are dispatched, and zero data leaves the device.
+  - The Google Services Gradle plugin is applied conditionally in `app/build.gradle.kts` only if `app/google-services.json` is present on disk, ensuring clean builds even when no Firebase configuration exists.
 - **v2 Swap-In Architecture**: Established domain repository interfaces (`DealRepository`, `ChatRepository`, etc.) facilitate drop-in replacement with cloud sync (Firebase/Supabase), Google Play Billing, and FCM push notifications without modifying UI screens or ViewModels (see `docs/ROADMAP.md`).
 
 ## Dependency List & Versions
@@ -55,3 +67,5 @@ com.localdeals.finder
 - WorkManager 2.9.0
 - Core SplashScreen 1.0.1
 - Robolectric 4.12.2 (for local JVM SQLite and DAO unit testing)
+- Firebase BOM 33.4.0 (dormant behind `ENABLE_CLOUD_SYNC=false` in v1)
+

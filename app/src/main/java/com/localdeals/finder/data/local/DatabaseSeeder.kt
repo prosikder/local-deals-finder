@@ -16,10 +16,10 @@ class DatabaseSeeder @Inject constructor(
     private val database: AppDatabase
 ) {
     suspend fun seedIfNotSeeded() = withContext(Dispatchers.IO) {
-        val userCount = database.userDao().getUserByIdSync("admin_id")
-        if (userCount == null) {
+        val isSeeded = database.categoryDao().getCategoryById("cat_1") != null
+        if (!isSeeded) {
             seedDatabase()
-        } else {
+        } else if (com.localdeals.finder.BuildConfig.DEBUG) {
             val alice = database.userDao().getUserByEmail("alice@example.com")
             if (alice == null) {
                 val aliceSalt = HashUtil.generateSalt()
@@ -59,9 +59,9 @@ class DatabaseSeeder @Inject constructor(
             database.userDao().clearUsers()
             database.recentSearchDao().clearRecentSearches()
 
-            // 2. Seed Users
-            val usersToSeed = mutableListOf<UserEntity>()
+            // 2. Seed Users ONLY in DEBUG builds (zero test accounts seeded in release builds)
             if (com.localdeals.finder.BuildConfig.DEBUG) {
+                val usersToSeed = mutableListOf<UserEntity>()
                 val adminSalt = HashUtil.generateSalt()
                 val adminHash = HashUtil.hashPassword("Admin@123", adminSalt)
                 val adminUser = UserEntity(
@@ -73,64 +73,64 @@ class DatabaseSeeder @Inject constructor(
                     role = Role.ADMIN
                 )
                 usersToSeed.add(adminUser)
-            }
 
-            val user1Salt = HashUtil.generateSalt()
-            val user1Hash = HashUtil.hashPassword("User@123", user1Salt)
-            val user1 = UserEntity(
-                id = "user_1",
-                name = "Rahim Ahmed",
-                email = "rahim@local.app",
-                passwordHash = user1Hash,
-                passwordSalt = user1Salt,
-                phone = "01700000001",
-                role = Role.USER
-            )
-            usersToSeed.add(user1)
-
-            val user2Salt = HashUtil.generateSalt()
-            val user2Hash = HashUtil.hashPassword("User@123", user2Salt)
-            val user2 = UserEntity(
-                id = "user_2",
-                name = "Sadia Islam",
-                email = "sadia@local.app",
-                passwordHash = user2Hash,
-                passwordSalt = user2Salt,
-                phone = "01700000002",
-                role = Role.USER
-            )
-            usersToSeed.add(user2)
-
-            val aliceSalt = HashUtil.generateSalt()
-            val aliceHash = HashUtil.hashPassword("pass123", aliceSalt)
-            val alice = UserEntity(
-                id = "user_alice",
-                name = "Alice",
-                email = "alice@example.com",
-                passwordHash = aliceHash,
-                passwordSalt = aliceSalt,
-                phone = "01700000003",
-                role = Role.USER
-            )
-            usersToSeed.add(alice)
-
-            // Seed seller users for each seller
-            val sellerUsers = MockData.sellers.map { seller ->
-                val sellerSalt = HashUtil.generateSalt()
-                val sellerHash = HashUtil.hashPassword("Seller@123", sellerSalt)
-                UserEntity(
-                    id = seller.userId,
-                    name = seller.businessName,
-                    email = "${seller.userId}@local.app",
-                    passwordHash = sellerHash,
-                    passwordSalt = sellerSalt,
-                    phone = seller.phoneNumber,
-                    role = Role.SELLER
+                val user1Salt = HashUtil.generateSalt()
+                val user1Hash = HashUtil.hashPassword("User@123", user1Salt)
+                val user1 = UserEntity(
+                    id = "user_1",
+                    name = "Rahim Ahmed",
+                    email = "rahim@local.app",
+                    passwordHash = user1Hash,
+                    passwordSalt = user1Salt,
+                    phone = "01700000001",
+                    role = Role.USER
                 )
-            }
-            usersToSeed.addAll(sellerUsers)
+                usersToSeed.add(user1)
 
-            database.userDao().insertUsers(usersToSeed)
+                val user2Salt = HashUtil.generateSalt()
+                val user2Hash = HashUtil.hashPassword("User@123", user2Salt)
+                val user2 = UserEntity(
+                    id = "user_2",
+                    name = "Sadia Islam",
+                    email = "sadia@local.app",
+                    passwordHash = user2Hash,
+                    passwordSalt = user2Salt,
+                    phone = "01700000002",
+                    role = Role.USER
+                )
+                usersToSeed.add(user2)
+
+                val aliceSalt = HashUtil.generateSalt()
+                val aliceHash = HashUtil.hashPassword("pass123", aliceSalt)
+                val alice = UserEntity(
+                    id = "user_alice",
+                    name = "Alice",
+                    email = "alice@example.com",
+                    passwordHash = aliceHash,
+                    passwordSalt = aliceSalt,
+                    phone = "01700000003",
+                    role = Role.USER
+                )
+                usersToSeed.add(alice)
+
+                // Seed seller users for each seller
+                val sellerUsers = MockData.sellers.map { seller ->
+                    val sellerSalt = HashUtil.generateSalt()
+                    val sellerHash = HashUtil.hashPassword("Seller@123", sellerSalt)
+                    UserEntity(
+                        id = seller.userId,
+                        name = seller.businessName,
+                        email = "${seller.userId}@local.app",
+                        passwordHash = sellerHash,
+                        passwordSalt = sellerSalt,
+                        phone = seller.phoneNumber,
+                        role = Role.SELLER
+                    )
+                }
+                usersToSeed.addAll(sellerUsers)
+
+                database.userDao().insertUsers(usersToSeed)
+            }
 
             // 3. Seed Categories
             val categories = MockData.categories.map { it.toEntity() }

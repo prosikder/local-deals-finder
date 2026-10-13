@@ -20,8 +20,16 @@ import javax.inject.Singleton
 class FirebaseSyncManager @Inject constructor(
     private val database: AppDatabase
 ) {
-    private val firestore: FirebaseFirestore by lazy {
-        FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore? by lazy {
+        if (com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) {
+            try {
+                FirebaseFirestore.getInstance()
+            } catch (e: Exception) {
+                null
+            }
+        } else {
+            null
+        }
     }
 
     private var ordersListenerRegistration: ListenerRegistration? = null
@@ -33,9 +41,11 @@ class FirebaseSyncManager @Inject constructor(
      * 2. If remote collection is empty, pushes local deals to Firestore so all devices share the deals!
      */
     suspend fun syncDeals() = withContext(Dispatchers.IO) {
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return@withContext
+        val db = firestore ?: return@withContext
         try {
             AppLogger.d("FirebaseSync", "Starting deals sync with Firestore...")
-            val snapshot = firestore.collection("deals").get().await()
+            val snapshot = db.collection("deals").get().await()
 
             if (snapshot.isEmpty) {
                 AppLogger.d("FirebaseSync", "Firestore deals collection empty. Seeding local deals to Firestore...")
@@ -54,7 +64,7 @@ class FirebaseSyncManager @Inject constructor(
                         "expirationTimeMillis" to deal.expirationTimeMillis,
                         "imageUrl" to deal.imageUrl
                     )
-                    firestore.collection("deals").document(deal.id).set(map)
+                    db.collection("deals").document(deal.id).set(map)
                 }
                 AppLogger.d("FirebaseSync", "Successfully seeded ${localDeals.size} deals to Firestore.")
             } else {
@@ -107,6 +117,8 @@ class FirebaseSyncManager @Inject constructor(
      * Publishes a deal to Firestore when created or updated by a merchant
      */
     suspend fun publishDeal(deal: DealEntity) = withContext(Dispatchers.IO) {
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return@withContext
+        val db = firestore ?: return@withContext
         try {
             val map = mapOf(
                 "id" to deal.id,
@@ -121,7 +133,7 @@ class FirebaseSyncManager @Inject constructor(
                 "expirationTimeMillis" to deal.expirationTimeMillis,
                 "imageUrl" to deal.imageUrl
             )
-            firestore.collection("deals").document(deal.id).set(map).await()
+            db.collection("deals").document(deal.id).set(map).await()
             AppLogger.d("FirebaseSync", "Deal ${deal.id} published to Firestore.")
         } catch (e: Exception) {
             AppLogger.w("FirebaseSync", "Failed to publish deal to Firestore: ${e.message}")
@@ -132,8 +144,10 @@ class FirebaseSyncManager @Inject constructor(
      * Deletes a deal from Firestore when deleted by a merchant or admin
      */
     suspend fun deleteDeal(dealId: String) = withContext(Dispatchers.IO) {
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return@withContext
+        val db = firestore ?: return@withContext
         try {
-            firestore.collection("deals").document(dealId).delete().await()
+            db.collection("deals").document(dealId).delete().await()
             AppLogger.d("FirebaseSync", "Deal $dealId deleted from Firestore.")
         } catch (e: Exception) {
             AppLogger.w("FirebaseSync", "Failed to delete deal from Firestore: ${e.message}")
@@ -144,6 +158,8 @@ class FirebaseSyncManager @Inject constructor(
      * Uploads an order request to Firestore
      */
     suspend fun uploadOrder(order: OrderRequestEntity) = withContext(Dispatchers.IO) {
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return@withContext
+        val db = firestore ?: return@withContext
         try {
             val map = mapOf(
                 "id" to order.id,
@@ -156,7 +172,7 @@ class FirebaseSyncManager @Inject constructor(
                 "status" to order.status.name,
                 "timestampMillis" to order.timestampMillis
             )
-            firestore.collection("orders").document(order.id).set(map).await()
+            db.collection("orders").document(order.id).set(map).await()
             AppLogger.d("FirebaseSync", "Order ${order.id} uploaded to Firestore.")
         } catch (e: Exception) {
             AppLogger.w("FirebaseSync", "Failed to upload order to Firestore: ${e.message}")
@@ -167,9 +183,11 @@ class FirebaseSyncManager @Inject constructor(
      * Listens to real-time orders for a seller and syncs them to Room
      */
     fun startListeningToSellerOrders(sellerId: String) {
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return
+        val db = firestore ?: return
         try {
             ordersListenerRegistration?.remove()
-            ordersListenerRegistration = firestore.collection("orders")
+            ordersListenerRegistration = db.collection("orders")
                 .whereEqualTo("sellerId", sellerId)
                 .addSnapshotListener { snapshot, error ->
                     if (error != null) {
@@ -208,6 +226,8 @@ class FirebaseSyncManager @Inject constructor(
      * Sends a chat message to Firestore
      */
     suspend fun sendChatMessage(message: ChatMessageEntity) = withContext(Dispatchers.IO) {
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return@withContext
+        val db = firestore ?: return@withContext
         try {
             val map = mapOf(
                 "id" to message.id,
@@ -217,7 +237,7 @@ class FirebaseSyncManager @Inject constructor(
                 "timestampMillis" to message.timestampMillis,
                 "isRead" to message.isRead
             )
-            firestore.collection("chat_messages").document(message.id).set(map).await()
+            db.collection("chat_messages").document(message.id).set(map).await()
             AppLogger.d("FirebaseSync", "Chat message ${message.id} sent to Firestore.")
         } catch (e: Exception) {
             AppLogger.w("FirebaseSync", "Failed to send chat message to Firestore: ${e.message}")
@@ -228,9 +248,11 @@ class FirebaseSyncManager @Inject constructor(
      * Listens to real-time chat messages between two users and syncs them to Room
      */
     fun startListeningToChat(currentUserId: String, otherUserId: String) {
+        if (!com.localdeals.finder.BuildConfig.ENABLE_CLOUD_SYNC) return
+        val db = firestore ?: return
         try {
             chatListenerRegistration?.remove()
-            chatListenerRegistration = firestore.collection("chat_messages")
+            chatListenerRegistration = db.collection("chat_messages")
                 .whereIn("senderId", listOf(currentUserId, otherUserId))
                 .addSnapshotListener { snapshot, error ->
                     if (error != null) {
