@@ -11,6 +11,8 @@ interface AuthRepository {
     suspend fun logout()
     fun getUsers(): Flow<List<User>>
     suspend fun updateUserStatus(userId: String, isBlocked: Boolean)
+    suspend fun hasAdmin(): Boolean
+    suspend fun setupOwner(name: String, email: String, pass: String): Result<User>
 }
 
 interface DealRepository {

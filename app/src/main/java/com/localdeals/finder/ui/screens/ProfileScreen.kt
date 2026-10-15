@@ -179,14 +179,16 @@ fun ProfileContent(
             Text("My Orders")
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        if (com.localdeals.finder.BuildConfig.IS_TEST_BUILD) {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedButton(
-            onClick = { showResetDialog = true },
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
-        ) {
-            Text("Reset Demo Data / Clear All")
+            OutlinedButton(
+                onClick = { showResetDialog = true },
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
+            ) {
+                Text("Reset Demo Data / Clear All")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

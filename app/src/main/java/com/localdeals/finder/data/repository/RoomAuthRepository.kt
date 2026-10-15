@@ -115,4 +115,32 @@ class RoomAuthRepository @Inject constructor(
     override suspend fun updateUserStatus(userId: String, isBlocked: Boolean) {
         userDao.updateUserStatus(userId, isBlocked)
     }
+
+    override suspend fun hasAdmin(): Boolean {
+        return userDao.getAdminCount() > 0
+    }
+
+    override suspend fun setupOwner(name: String, email: String, pass: String): Result<User> {
+        if (hasAdmin()) {
+            return Result.failure(Exception("An administrator account is already configured."))
+        }
+        val existing = userDao.getUserByEmail(email)
+        if (existing != null) {
+            return Result.failure(Exception("Email is already in use by another account."))
+        }
+        val salt = HashUtil.generateSalt()
+        val hash = HashUtil.hashPassword(pass, salt)
+        val adminUser = UserEntity(
+            id = "admin_${UUID.randomUUID().toString().take(8)}",
+            name = name.ifBlank { "Administrator" },
+            email = email,
+            passwordHash = hash,
+            passwordSalt = salt,
+            phone = "",
+            role = Role.ADMIN
+        )
+        userDao.insertUser(adminUser)
+        dataStoreManager.saveSession(adminUser.id)
+        return Result.success(adminUser.toDomain())
+    }
 }

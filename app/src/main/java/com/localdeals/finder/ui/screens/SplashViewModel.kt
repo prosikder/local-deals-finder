@@ -16,6 +16,7 @@ import javax.inject.Inject
 sealed class SplashState {
     object Loading : SplashState()
     object GoToOnboarding : SplashState()
+    object GoToOwnerSetup : SplashState()
     object GoToLogin : SplashState()
     object GoToLocationPermission : SplashState()
     data class GoToHome(val role: Role) : SplashState()
@@ -25,7 +26,8 @@ sealed class SplashState {
 class SplashViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val databaseSeeder: DatabaseSeeder,
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val authRepository: com.localdeals.finder.domain.repository.AuthRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow<SplashState>(SplashState.Loading)
     val state = _state.asStateFlow()
@@ -38,6 +40,13 @@ class SplashViewModel @Inject constructor(
                 _state.value = SplashState.GoToOnboarding
                 return@launch
             }
+
+            // On first launch in release mode without an administrator, show one-time Owner Setup
+            if (!com.localdeals.finder.BuildConfig.IS_TEST_BUILD && !authRepository.hasAdmin()) {
+                _state.value = SplashState.GoToOwnerSetup
+                return@launch
+            }
+
             val user = getCurrentUserUseCase()
             if (user == null || user.isBlocked) {
                 _state.value = SplashState.GoToLogin

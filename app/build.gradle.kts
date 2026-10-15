@@ -7,7 +7,9 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-if (file("google-services.json").exists()) {
+val enableCloudSync = project.findProperty("enableCloudSync")?.toString()?.toBoolean() ?: false
+
+if (enableCloudSync && file("google-services.json").exists()) {
     apply(plugin = "com.google.gms.google-services")
 }
 
@@ -22,8 +24,8 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        val enableCloudSync = project.findProperty("enableCloudSync")?.toString()?.toBoolean() ?: false
         buildConfigField("boolean", "ENABLE_CLOUD_SYNC", enableCloudSync.toString())
+        buildConfigField("boolean", "IS_TEST_BUILD", "false")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -49,9 +51,13 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            buildConfigField("boolean", "IS_TEST_BUILD", "true")
+        }
+        getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
+            buildConfigField("boolean", "IS_TEST_BUILD", "false")
             val keystorePropertiesFile = rootProject.file("keystore.properties")
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
@@ -65,6 +71,7 @@ android {
             initWith(getByName("release"))
             matchingFallbacks += listOf("release")
             signingConfig = signingConfigs.getByName("debug")
+            buildConfigField("boolean", "IS_TEST_BUILD", "true")
         }
     }
     compileOptions {

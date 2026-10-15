@@ -22,12 +22,14 @@ jobs:
           path: |
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/releaseTest/*.apk
-      - name: Publish APKs to Releases
+            app/build/outputs/mapping/releaseTest/mapping.txt
+      - name: Publish APKs and Proguard Mapping to Releases
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create build-${{ github.run_number }} \
             app/build/outputs/apk/debug/app-debug.apk \
             app/build/outputs/apk/releaseTest/app-releaseTest.apk \
+            app/build/outputs/mapping/releaseTest/mapping.txt \
             --title "Build ${{ github.run_number }}" \
-            --notes "Debug APK & R8-minified Debug-signed ReleaseTest APK, commit ${{ github.sha }}"
+            --notes "Debug APK, R8-minified Debug-signed ReleaseTest APK, and Proguard de-obfuscation mapping.txt, commit ${{ github.sha }}"

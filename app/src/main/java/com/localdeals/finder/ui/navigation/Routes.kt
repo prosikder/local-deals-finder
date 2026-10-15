@@ -38,6 +38,7 @@ sealed class Screen(val route: String) {
     }
     object StoreProfileEdit : Screen("store_profile_edit")
     object AdminPanel : Screen("admin_panel")
+    object OwnerSetup : Screen("owner_setup")
 
     object ComponentGallery : Screen("component_gallery")
 }

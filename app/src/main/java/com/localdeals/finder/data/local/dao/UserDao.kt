@@ -19,6 +19,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     suspend fun getUserByEmail(email: String): UserEntity?
 
+    @Query("SELECT COUNT(*) FROM users WHERE role = 'ADMIN'")
+    suspend fun getAdminCount(): Int
+
     @Query("SELECT * FROM users")
     fun getAllUsers(): Flow<List<UserEntity>>
 

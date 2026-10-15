@@ -89,6 +89,20 @@ class MockAuthRepository @Inject constructor(
             userDatabase[index] = userDatabase[index].copy(isBlocked = isBlocked)
         }
     }
+
+    override suspend fun hasAdmin(): Boolean {
+        return userDatabase.any { it.role == Role.ADMIN }
+    }
+
+    override suspend fun setupOwner(name: String, email: String, pass: String): Result<User> {
+        val salt = HashUtil.generateSalt()
+        val hash = HashUtil.hashPassword(pass, salt)
+        val adminUser = User("admin_${userDatabase.size + 1}", name.ifBlank { "Administrator" }, email, role = Role.ADMIN)
+        userDatabase.add(adminUser)
+        credentials[email] = hash to salt
+        dataStoreManager.saveSession(adminUser.id)
+        return Result.success(adminUser)
+    }
 }
 
 @Singleton

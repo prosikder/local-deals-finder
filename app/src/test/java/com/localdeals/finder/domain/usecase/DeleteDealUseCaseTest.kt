@@ -38,6 +38,8 @@ class DeleteDealUseCaseTest {
             override suspend fun updateProfile(user: User): Result<User> = Result.success(user)
             override fun getUsers(): Flow<List<User>> = kotlinx.coroutines.flow.flowOf(emptyList())
             override suspend fun updateUserStatus(userId: String, isBlocked: Boolean) {}
+            override suspend fun hasAdmin(): Boolean = false
+            override suspend fun setupOwner(n: String, e: String, p: String) = throw NotImplementedError()
         }
 
         val useCase = DeleteDealUseCase(mockDealRepo, mockAuthRepo)
@@ -72,6 +74,8 @@ class DeleteDealUseCaseTest {
             override suspend fun updateProfile(user: User): Result<User> = Result.success(user)
             override fun getUsers(): Flow<List<User>> = kotlinx.coroutines.flow.flowOf(emptyList())
             override suspend fun updateUserStatus(userId: String, isBlocked: Boolean) {}
+            override suspend fun hasAdmin(): Boolean = false
+            override suspend fun setupOwner(n: String, e: String, p: String) = throw NotImplementedError()
         }
 
         val useCase = DeleteDealUseCase(mockDealRepo, mockAuthRepo)

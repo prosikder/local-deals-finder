@@ -19,7 +19,7 @@ class DatabaseSeeder @Inject constructor(
         val isSeeded = database.categoryDao().getCategoryById("cat_1") != null
         if (!isSeeded) {
             seedDatabase()
-        } else if (com.localdeals.finder.BuildConfig.DEBUG) {
+        } else if (com.localdeals.finder.BuildConfig.IS_TEST_BUILD) {
             val alice = database.userDao().getUserByEmail("alice@example.com")
             if (alice == null) {
                 val aliceSalt = HashUtil.generateSalt()
@@ -59,8 +59,12 @@ class DatabaseSeeder @Inject constructor(
             database.userDao().clearUsers()
             database.recentSearchDao().clearRecentSearches()
 
-            // 2. Seed Users ONLY in DEBUG builds (zero test accounts seeded in release builds)
-            if (com.localdeals.finder.BuildConfig.DEBUG) {
+            // 2. Seed Categories (always seeded so categories exist in all builds)
+            val categories = MockData.categories.map { it.toEntity() }
+            database.categoryDao().insertCategories(categories)
+
+            // 3. Seed Demo Data (Users, Sellers, Deals, Reviews) ONLY in test builds (debug and releaseTest)
+            if (com.localdeals.finder.BuildConfig.IS_TEST_BUILD) {
                 val usersToSeed = mutableListOf<UserEntity>()
                 val adminSalt = HashUtil.generateSalt()
                 val adminHash = HashUtil.hashPassword("Admin@123", adminSalt)
@@ -130,57 +134,53 @@ class DatabaseSeeder @Inject constructor(
                 usersToSeed.addAll(sellerUsers)
 
                 database.userDao().insertUsers(usersToSeed)
-            }
 
-            // 3. Seed Categories
-            val categories = MockData.categories.map { it.toEntity() }
-            database.categoryDao().insertCategories(categories)
+                // Seed Sellers
+                val sellers = MockData.sellers.map { it.toEntity() }
+                database.sellerDao().insertSellers(sellers)
 
-            // 4. Seed Sellers
-            val sellers = MockData.sellers.map { it.toEntity() }
-            database.sellerDao().insertSellers(sellers)
+                // Seed Deals
+                val deals = MockData.deals.map { it.toEntity() }
+                database.dealDao().insertDeals(deals)
 
-            // 5. Seed Deals
-            val deals = MockData.deals.map { it.toEntity() }
-            database.dealDao().insertDeals(deals)
-
-            // 6. Seed Deal Stats
-            val statsList = MockData.deals.map { deal ->
-                DealStatsEntity(
-                    dealId = deal.id,
-                    views = (12..150).random(),
-                    wishlistAdds = (2..25).random(),
-                    orders = (1..10).random()
-                )
-            }
-            database.dealStatsDao().insertStats(statsList)
-
-            // 7. Seed Initial Reviews
-            val reviews = MockData.deals.take(15).flatMap { deal ->
-                listOf(
-                    ReviewEntity(
-                        id = "rev_1_${deal.id}",
+                // Seed Deal Stats
+                val statsList = MockData.deals.map { deal ->
+                    DealStatsEntity(
                         dealId = deal.id,
-                        sellerId = deal.sellerId,
-                        userId = "user_1",
-                        userName = "Rahim Ahmed",
-                        rating = 5,
-                        comment = "Excellent deal! Highly recommend.",
-                        timestampMillis = System.currentTimeMillis() - 86400000L * 2
-                    ),
-                    ReviewEntity(
-                        id = "rev_2_${deal.id}",
-                        dealId = deal.id,
-                        sellerId = deal.sellerId,
-                        userId = "user_2",
-                        userName = "Sadia Islam",
-                        rating = 4,
-                        comment = "Good value for money, but the store was a bit crowded.",
-                        timestampMillis = System.currentTimeMillis() - 86400000L * 5
+                        views = (12..150).random(),
+                        wishlistAdds = (2..25).random(),
+                        orders = (1..10).random()
                     )
-                )
+                }
+                database.dealStatsDao().insertStats(statsList)
+
+                // Seed Initial Reviews
+                val reviews = MockData.deals.take(15).flatMap { deal ->
+                    listOf(
+                        ReviewEntity(
+                            id = "rev_1_${deal.id}",
+                            dealId = deal.id,
+                            sellerId = deal.sellerId,
+                            userId = "user_1",
+                            userName = "Rahim Ahmed",
+                            rating = 5,
+                            comment = "Excellent deal! Highly recommend.",
+                            timestampMillis = System.currentTimeMillis() - 86400000L * 2
+                        ),
+                        ReviewEntity(
+                            id = "rev_2_${deal.id}",
+                            dealId = deal.id,
+                            sellerId = deal.sellerId,
+                            userId = "user_2",
+                            userName = "Sadia Islam",
+                            rating = 4,
+                            comment = "Good value for money, but the store was a bit crowded.",
+                            timestampMillis = System.currentTimeMillis() - 86400000L * 5
+                        )
+                    )
+                }
+                database.reviewDao().insertReviews(reviews)
             }
-            database.reviewDao().insertReviews(reviews)
         }
     }
 }

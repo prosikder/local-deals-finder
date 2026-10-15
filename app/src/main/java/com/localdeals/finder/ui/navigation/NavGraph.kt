@@ -37,6 +37,11 @@ fun NavGraph(
                             popUpTo(Screen.Splash.route) { inclusive = true }
                         }
                     }
+                    is SplashState.GoToOwnerSetup -> {
+                        navController.navigate(Screen.OwnerSetup.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
                     is SplashState.GoToLogin -> {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Splash.route) { inclusive = true }
@@ -66,8 +71,27 @@ fun NavGraph(
         composable(Screen.Onboarding.route) {
             OnboardingScreen(
                 onFinished = {
-                    navController.navigate(Screen.Login.route) {
+                    val nextRoute = if (!com.localdeals.finder.BuildConfig.IS_TEST_BUILD) {
+                        Screen.OwnerSetup.route
+                    } else {
+                        Screen.Login.route
+                    }
+                    navController.navigate(nextRoute) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.OwnerSetup.route) {
+            OwnerSetupScreen(
+                onSetupSuccess = {
+                    navController.navigate(Screen.AdminPanel.route) {
+                        popUpTo(Screen.OwnerSetup.route) { inclusive = true }
+                    }
+                },
+                onSkip = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.OwnerSetup.route) { inclusive = true }
                     }
                 }
             )

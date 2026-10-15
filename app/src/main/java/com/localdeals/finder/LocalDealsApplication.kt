@@ -18,8 +18,7 @@ class LocalDealsApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val isDebug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        if (isDebug) {
+        if (com.localdeals.finder.BuildConfig.IS_TEST_BUILD) {
             val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
             Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
                 try {

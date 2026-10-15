@@ -40,3 +40,7 @@
     public static int v(...);
     public static int d(...);
 }
+
+# Keep line numbers and source file names for R8 crash de-obfuscation
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

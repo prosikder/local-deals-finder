@@ -45,6 +45,15 @@ class FakeAuthRepository : AuthRepository {
             users[index] = users[index].copy(isBlocked = isBlocked)
         }
     }
+
+    override suspend fun hasAdmin(): Boolean = users.any { it.role == Role.ADMIN }
+
+    override suspend fun setupOwner(name: String, email: String, pass: String): Result<User> {
+        val user = User("admin_1", name, email, role = Role.ADMIN)
+        users.add(user)
+        currentUser = user
+        return Result.success(user)
+    }
 }
 
 class AuthUseCasesTest {
