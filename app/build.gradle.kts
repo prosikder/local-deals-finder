@@ -15,14 +15,14 @@ if (enableCloudSync && file("google-services.json").exists()) {
 
 android {
     namespace = "com.localdeals.finder"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.localdeals.finder"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        targetSdk = 36
+        versionCode = 2
+        versionName = "1.0.1"
 
         buildConfigField("boolean", "ENABLE_CLOUD_SYNC", enableCloudSync.toString())
         buildConfigField("boolean", "IS_TEST_BUILD", "false")
@@ -57,6 +57,9 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
             buildConfigField("boolean", "IS_TEST_BUILD", "false")
             val keystorePropertiesFile = rootProject.file("keystore.properties")
             if (keystorePropertiesFile.exists()) {
