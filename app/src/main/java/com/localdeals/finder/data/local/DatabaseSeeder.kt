@@ -16,26 +16,10 @@ class DatabaseSeeder @Inject constructor(
     private val database: AppDatabase
 ) {
     suspend fun seedIfNotSeeded() = withContext(Dispatchers.IO) {
-        val isSeeded = database.categoryDao().getCategoryById("cat_1") != null
+        val isSeeded = database.categoryDao().getCategoryById("cat_1") != null &&
+                       database.userDao().getUserByEmail("rahim@local.app") != null
         if (!isSeeded) {
             seedDatabase()
-        } else if (com.localdeals.finder.BuildConfig.IS_TEST_BUILD) {
-            val alice = database.userDao().getUserByEmail("alice@example.com")
-            if (alice == null) {
-                val aliceSalt = HashUtil.generateSalt()
-                val aliceHash = HashUtil.hashPassword("pass123", aliceSalt)
-                database.userDao().insertUser(
-                    UserEntity(
-                        id = "user_alice",
-                        name = "Alice",
-                        email = "alice@example.com",
-                        passwordHash = aliceHash,
-                        passwordSalt = aliceSalt,
-                        phone = "01700000003",
-                        role = Role.USER
-                    )
-                )
-            }
         }
     }
 
@@ -63,9 +47,8 @@ class DatabaseSeeder @Inject constructor(
             val categories = MockData.categories.map { it.toEntity() }
             database.categoryDao().insertCategories(categories)
 
-            // 3. Seed Demo Data (Users, Sellers, Deals, Reviews) ONLY in test builds (debug and releaseTest)
-            if (com.localdeals.finder.BuildConfig.IS_TEST_BUILD) {
-                val usersToSeed = mutableListOf<UserEntity>()
+            // 3. Seed Demo Data (Users, Sellers, Deals, Reviews)
+            val usersToSeed = mutableListOf<UserEntity>()
                 val adminSalt = HashUtil.generateSalt()
                 val adminHash = HashUtil.hashPassword("Admin@123", adminSalt)
                 val adminUser = UserEntity(
@@ -180,7 +163,6 @@ class DatabaseSeeder @Inject constructor(
                     )
                 }
                 database.reviewDao().insertReviews(reviews)
-            }
         }
     }
 }
